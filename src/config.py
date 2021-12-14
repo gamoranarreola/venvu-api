@@ -10,7 +10,7 @@ class BaseConfig:
     TESTING = False
     DEVELOPMENT = True
     PRODUCTION = False
-    SECRET_KEY = 'fda4c8b6a9efbd8fe6c95c5ef6629835'
+    SECRET_KEY = 'ddf3eead1244664fe42d0ae458364095'
 
 
 class DevelopmentConfig(BaseConfig):
@@ -33,4 +33,4 @@ class ProductionConfig(BaseConfig):
     MONGO_DB = os.environ['MONGO_DB']
     MONGO_USERNAME = os.environ['MONGO_USERNAME']
     MONGO_PASSWORD = os.environ['MONGO_PASSWORD']
-    SECRET_KEY = '38e09605a4fcb27f39c2c17d177c3c70'
+    SECRET_KEY = 'fb6103f3c29371784f9fab2257c8f090'
