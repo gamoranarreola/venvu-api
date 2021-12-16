@@ -6,6 +6,7 @@ dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
 
+
 class BaseConfig:
     TESTING = False
     DEVELOPMENT = True
@@ -19,6 +20,7 @@ class DevelopmentConfig(BaseConfig):
     MONGO_DB = os.environ['MONGO_DB']
     MONGO_USERNAME = os.environ['MONGO_USERNAME']
     MONGO_PASSWORD = os.environ['MONGO_PASSWORD']
+
 
 class TestingConfig(BaseConfig):
     TESTING = True

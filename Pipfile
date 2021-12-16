@@ -7,11 +7,10 @@ name = "pypi"
 flask = "==2.0.2"
 python-dotenv = "==0.19.2"
 flask-restful = "==0.3.9"
-psycopg2 = "==2.9.2"
-flask-sqlalchemy = "==2.5.1"
 flask-cors = "==3.0.10"
 flask-jwt-extended = "==4.3.1"
-mongoengine = "==0.23.1"
+python-jose = "==3.3.0"
+six = "==1.16.0"
 flask-mongoengine = "==1.0.0"
 
 [dev-packages]
