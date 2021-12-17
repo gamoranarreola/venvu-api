@@ -1,5 +1,6 @@
 from enum import Enum
 from datetime import datetime
+from mongoengine import DO_NOTHING
 
 from app.db import db
 
@@ -54,3 +55,20 @@ class CompanyProfile(db.Document):
     is_active = db.BooleanField(default=False)
     created_at = db.DateTimeField(default=datetime.now())
     updated_at = db.DateTimeField()
+
+
+class Account(db.Document):
+    """
+    Represents an individual's user account. The roles will
+    be as set in the corresponding Auth0 account which is
+    uniquely identified with the "sub" field.
+    """
+    given_names = db.StringField(max_length=32, required=True)
+    surnames = db.StringField(max_length=32, required=True)
+    company_profile = db.LazyReferenceField(CompanyProfile, reverse_delete_rule=DO_NOTHING)
+    type = db.EnumField(AccountType)
+    email = db.StringField(max_length=64, required=True, unique=True)
+    job_title = db.StringField(max_length=32, required=True)
+    department = db.StringField(max_length=32, required=True)
+    phone = db.StringField(max_length=13, required=True)
+    sub = db.StringField(max_length=64, unique=True)
