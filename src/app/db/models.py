@@ -63,12 +63,12 @@ class Account(db.Document):
     be as set in the corresponding Auth0 account which is
     uniquely identified with the "sub" field.
     """
-    given_names = db.StringField(max_length=32, required=True)
-    surnames = db.StringField(max_length=32, required=True)
+    given_names = db.StringField(max_length=32)
+    surnames = db.StringField(max_length=32)
     company_profile = db.LazyReferenceField(CompanyProfile, reverse_delete_rule=DO_NOTHING)
     type = db.EnumField(AccountType)
     email = db.StringField(max_length=64, required=True, unique=True)
-    job_title = db.StringField(max_length=32, required=True)
-    department = db.StringField(max_length=32, required=True)
-    phone = db.StringField(max_length=13, required=True)
+    job_title = db.StringField(max_length=32)
+    department = db.StringField(max_length=32)
+    phone = db.StringField(max_length=13)
     sub = db.StringField(max_length=64, unique=True)

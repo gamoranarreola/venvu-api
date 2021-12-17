@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from flask_restful import Resource
 from flask.wrappers import Response
+from mongoengine.queryset.transform import query
 
 from app.api.errors import DuplicateResourceError, InternalServerError
 from app.api.auth0 import requires_auth
@@ -12,25 +13,24 @@ class AccountListApi(Resource):
     @requires_auth
     def post(self) -> Response:
         try:
-            # Get request data
             req_data = request.get_json()
+            query_result = Account.objects(email=req_data.get('email'))
 
-            # Query for preexisting account
-            if len(Account.objects(email=req_data.get('email'))) == 0:
+            if len(query_result) == 0:
                 account = Account(**req_data)
                 account.save()
-
-                response = jsonify({
-                    'data': account,
-                    'error': None,
-                    'success': True
-                })
-
-                response.status_code = 200
-
-                return response
             else:
-                raise DuplicateResourceError
+                account = query_result[0]
+
+            response = jsonify({
+                'data': account,
+                'error': None,
+                'success': True
+            })
+
+            response.status_code = 200
+
+            return response
 
         except InternalServerError:
             raise InternalServerError
