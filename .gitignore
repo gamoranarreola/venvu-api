@@ -4,7 +4,6 @@
 .flaskenv
 .coverage
 __pycache__/
-migrations/
 htmlcov/
 env/
 *.session.sql

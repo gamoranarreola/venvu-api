@@ -1,9 +1,4 @@
-from flask_mongoengine import MongoEngine
-from mongoengine.connection import connect
+from flask_sqlalchemy import SQLAlchemy
 
 
-db = MongoEngine()
-
-
-def initialize_db(app):
-    db.init_app(app)
+db = SQLAlchemy()

@@ -1,9 +1,8 @@
 from flask import request, jsonify
 from flask_restful import Resource
 from flask.wrappers import Response
-from mongoengine.queryset.transform import query
 
-from app.api.errors import DuplicateResourceError, InternalServerError
+from app.api.errors import InternalServerError
 from app.api.auth0 import requires_auth
 from app.db.models import Account
 

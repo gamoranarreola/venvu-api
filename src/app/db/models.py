@@ -1,6 +1,4 @@
 from enum import Enum
-from datetime import datetime
-from mongoengine import DO_NOTHING
 
 from app.db import db
 
@@ -34,41 +32,86 @@ class YearlyRevenueRange(Enum):
     _1BPLUS = '1BPLUS'
 
 
-class CompanyProfile(db.Document):
-    name = db.StringField(max_length=64, unique=True)
-    parent_company = db.StringField(max_length=64)
-    address_line_1 = db.StringField(max_length=64)
-    address_line_2 = db.StringField(max_length=32)
-    address_line_3 = db.StringField(max_length=32)
-    city = db.StringField(max_length=32)
-    state_province = db.StringField(max_length=32)
-    postal_code = db.StringField(max_length=8)
-    country = db.StringField(max_length=32)
-    federal_tax_id = db.StringField(max_length=16, unique=True)
-    website = db.StringField(max_length=64, unique=True)
-    description = db.StringField(max_length=512)
-    key_products = db.ListField(db.StringField(max_length=32), default=[])
-    key_services = db.ListField(db.StringField(max_length=32), default=[])
-    employee_count_range = db.StringField(max_length=8, choices=EmployeeCountRange)
-    yearly_revenue_range = db.StringField(max_length=11, choices=YearlyRevenueRange)
-    is_tax_id_verified = db.BooleanField(default=False)
-    is_active = db.BooleanField(default=False)
-    created_at = db.DateTimeField(default=datetime.now())
-    updated_at = db.DateTimeField()
+class CompanyProfile(db.Model):
+    """
+    Represents a company or organization.
+    """
+    __tablename__ = 'company_profile'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    parent_company = db.Column(db.String(64))
+    address_line_1 = db.Column(db.String(64))
+    address_line_2 = db.Column(db.String(32))
+    address_line_3 = db.Column(db.String(32))
+    city = db.Column(db.String(32))
+    state_province = db.Column(db.String(32))
+    postal_code = db.Column(db.String(8))
+    country = db.Column(db.String(32))
+    federal_tax_id = db.Column(db.String(16), unique=True)
+    website = db.Column(db.String(64), unique=True)
+    description = db.Column(db.String(512))
+    key_products = db.Column(db.String(32), default=[])
+    key_services = db.Column(db.String(32), default=[])
+    employee_count_range = db.Column(db.Enum(EmployeeCountRange))
+    yearly_revenue_range = db.Column(db.Enum(YearlyRevenueRange))
+    is_tax_id_verified = db.Column(db.Boolean, default=False)
+    is_active = db.Column(db.Boolean, default=False)
+    accounts = db.relationship('Account', back_populates='company_profile')
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return CompanyProfile.query.all()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self) -> str:
+        return super().__repr__()
 
 
-class Account(db.Document):
+class Account(db.Model):
     """
     Represents an individual's user account. The roles will
     be as set in the corresponding Auth0 account which is
     uniquely identified with the "sub" field.
     """
-    given_names = db.StringField(max_length=32)
-    surnames = db.StringField(max_length=32)
-    company_profile = db.LazyReferenceField(CompanyProfile, reverse_delete_rule=DO_NOTHING)
-    type = db.EnumField(AccountType)
-    email = db.StringField(max_length=64, required=True, unique=True)
-    job_title = db.StringField(max_length=32)
-    department = db.StringField(max_length=32)
-    phone = db.StringField(max_length=13)
-    sub = db.StringField(max_length=64, unique=True)
+    __tablename__ = 'account'
+    id = db.Column(db.Integer, primary_key=True)
+    given_names = db.Column(db.String(32))
+    surnames = db.Column(db.String(32))
+    company_profile_id = db.Column(db.Integer, db.ForeignKey('company_profile.id', ondelete='CASCADE'))
+    company_profile = db.relationship('CompanyProfile', back_populates='accounts')
+    type = db.Column(db.Enum(AccountType))
+    email = db.Column(db.String(64), unique=True)
+    job_title = db.Column(db.String(32))
+    department = db.Column(db.String(32))
+    phone = db.Column(db.String(13))
+    sub = db.Column(db.String(64), unique=True)
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return Account.query.all()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self) -> str:
+        return super().__repr__()
