@@ -1,6 +1,5 @@
 from enum import Enum
-
-from sqlalchemy.sql.schema import Column
+from marshmallow_enum import EnumField
 
 from app.db import db, ma
 
@@ -102,24 +101,25 @@ class Account(db.Model):
 
     def __init__(
         self,
-        given_names,
-        surnames,
-        account_type,
         email,
-        job_title,
-        department,
-        phone,
         sub,
+        account_type = None,
+        given_names = None,
+        surnames = None,
+        job_title = None,
+        department = None,
+        phone = None,
         company_profile_id = None,
     ) -> None:
         self.given_names = given_names
         self.surnames = surnames
-        self.account_type = AccountType[account_type]
+        self.account_type
         self.email = email
         self.job_title = job_title
         self.department = department
         self.phone = phone
         self.sub = sub
+        self.company_profile = company_profile_id
 
     def save(self):
         db.session.add(self)
@@ -138,17 +138,19 @@ class Account(db.Model):
 
 
 class AccountSchema(ma.Schema):
+    account_type = EnumField(AccountType, by_value=True)
+
     class Meta:
         fields = (
             'given_names',
             'surnames',
-            # 'account_type',
+            'account_type',
             'email',
             'job_title',
             'department',
             'phone',
             'sub',
-            'company_profile_id',
+            'company_profile',
             '_links',
         )
 
