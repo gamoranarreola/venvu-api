@@ -5,11 +5,10 @@ from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
 
 from app.api.routes import create_routes
 from app.api.errors import errors
-from app.db import db
+from app.db import db, init_marshmallow
 
 
 migrate = Migrate()
@@ -27,6 +26,7 @@ def create_app() -> app.Flask:
     })
 
     db.init_app(flask_app)
+    init_marshmallow(flask_app)
     migrate.init_app(flask_app, db)
     api = Api(app=flask_app, errors=errors)
     create_routes(api=api)

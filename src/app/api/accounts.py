@@ -4,7 +4,8 @@ from flask.wrappers import Response
 
 from app.api.errors import InternalServerError
 from app.api.auth0 import requires_auth
-from app.db.models import Account
+from app.db import db
+from app.db.models import Account, account_schema
 
 
 class AccountListApi(Resource):
@@ -13,16 +14,17 @@ class AccountListApi(Resource):
     def post(self) -> Response:
         try:
             req_data = request.get_json()
-            query_result = Account.objects(email=req_data.get('email'))
+            query_result = Account.query.filter_by(email=req_data.get('email')).first()
 
-            if len(query_result) == 0:
+            if query_result is None:
                 account = Account(**req_data)
-                account.save()
+                db.session.add(account)
+                db.session.commit()
             else:
-                account = query_result[0]
+                account = query_result
 
             response = jsonify({
-                'data': account,
+                'data': account_schema.dump(account),
                 'error': None,
                 'success': True
             })

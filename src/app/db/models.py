@@ -1,6 +1,8 @@
 from enum import Enum
 
-from app.db import db
+from sqlalchemy.sql.schema import Column
+
+from app.db import db, ma
 
 
 class AccountType(Enum):
@@ -89,17 +91,35 @@ class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     given_names = db.Column(db.String(32))
     surnames = db.Column(db.String(32))
-    company_profile_id = db.Column(db.Integer, db.ForeignKey('company_profile.id', ondelete='CASCADE'))
+    company_profile_id = db.Column(db.Integer, db.ForeignKey('company_profile.id', ondelete='CASCADE'), nullable=True)
     company_profile = db.relationship('CompanyProfile', back_populates='accounts')
-    type = db.Column(db.Enum(AccountType))
+    account_type = db.Column(db.Enum(AccountType))
     email = db.Column(db.String(64), unique=True)
     job_title = db.Column(db.String(32))
     department = db.Column(db.String(32))
     phone = db.Column(db.String(13))
     sub = db.Column(db.String(64), unique=True)
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        given_names,
+        surnames,
+        account_type,
+        email,
+        job_title,
+        department,
+        phone,
+        sub,
+        company_profile_id = None,
+    ) -> None:
+        self.given_names = given_names
+        self.surnames = surnames
+        self.account_type = AccountType[account_type]
+        self.email = email
+        self.job_title = job_title
+        self.department = department
+        self.phone = phone
+        self.sub = sub
 
     def save(self):
         db.session.add(self)
@@ -115,3 +135,29 @@ class Account(db.Model):
 
     def __repr__(self) -> str:
         return super().__repr__()
+
+
+class AccountSchema(ma.Schema):
+    class Meta:
+        fields = (
+            'given_names',
+            'surnames',
+            # 'account_type',
+            'email',
+            'job_title',
+            'department',
+            'phone',
+            'sub',
+            'company_profile_id',
+            '_links',
+        )
+
+    _links = ma.Hyperlinks(
+        {
+            'self': ma.URLFor('accountlistapi', values=dict(id='<id>')),
+            'collections': ma.URLFor('accountlistapi')
+        }
+    )
+
+account_schema = AccountSchema()
+accounts_schema = AccountSchema(many=True)
