@@ -1,7 +1,7 @@
+from datetime import datetime
 from enum import Enum
-from marshmallow_enum import EnumField
 
-from app.db import db, ma
+from app.db import db
 
 
 class AccountType(Enum):
@@ -38,43 +38,94 @@ class CompanyProfile(db.Model):
     Represents a company or organization.
     """
     __tablename__ = 'company_profile'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    parent_company = db.Column(db.String(64))
+    accounts = db.relationship('Account', back_populates='company_profile')
     address_line_1 = db.Column(db.String(64))
     address_line_2 = db.Column(db.String(32))
     address_line_3 = db.Column(db.String(32))
     city = db.Column(db.String(32))
-    state_province = db.Column(db.String(32))
-    postal_code = db.Column(db.String(8))
     country = db.Column(db.String(32))
-    federal_tax_id = db.Column(db.String(16), unique=True)
-    website = db.Column(db.String(64), unique=True)
+    created_at = db.Column(db.DateTime)
     description = db.Column(db.String(512))
+    employee_count_range = db.Column(db.Enum(EmployeeCountRange))
+    federal_tax_id = db.Column(db.String(16), unique=True)
+    id = db.Column(db.Integer, primary_key=True)
+    is_active = db.Column(db.Boolean, default=False)
+    is_tax_id_verified = db.Column(db.Boolean, default=False)
     key_products = db.Column(db.String(32), default=[])
     key_services = db.Column(db.String(32), default=[])
-    employee_count_range = db.Column(db.Enum(EmployeeCountRange))
+    name = db.Column(db.String(64), unique=True)
+    parent_company = db.Column(db.String(64))
+    postal_code = db.Column(db.String(8))
+    state_province = db.Column(db.String(32))
+    updated_at = db.Column(db.DateTime)
+    website = db.Column(db.String(64), unique=True)
     yearly_revenue_range = db.Column(db.Enum(YearlyRevenueRange))
-    is_tax_id_verified = db.Column(db.Boolean, default=False)
-    is_active = db.Column(db.Boolean, default=False)
-    accounts = db.relationship('Account', back_populates='company_profile')
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
-    def __init__(self) -> None:
-        super().__init__()
+
+    def __init__(
+        self,
+        accounts,
+        address_line_1,
+        address_line_2,
+        address_line_3,
+        city,
+        country,
+        description,
+        employee_count_range,
+        federal_tax_id,
+        is_active,
+        is_tax_id_verified,
+        key_products,
+        key_services,
+        name,
+        parent_company,
+        postal_code,
+        state_province,
+        website,
+        yearly_revenue_range
+    ):
+        self.accounts = accounts
+        self.address_line_1 = address_line_1
+        self.address_line_2 = address_line_2
+        self.address_line_3 = address_line_3
+        self.city = city
+        self.country = country
+        self.description = description
+        self.employee_count_range = employee_count_range
+        self.federal_tax_id = federal_tax_id
+        self.is_active = is_active
+        self.is_tax_id_verified = is_tax_id_verified
+        self.key_products = key_products
+        self.key_services = key_services
+        self.name = name
+        self.parent_company = parent_company
+        self.postal_code = postal_code
+        self.state_province = state_province
+        self.website = website
+        self.yearly_revenue_range = yearly_revenue_range
+
 
     def save(self):
         db.session.add(self)
         db.session.commit()
 
+
+    def update(self, data):
+            for key, item in data.items():
+                setattr(self, key, item)
+            self.updated_at = datetime.utcnow()
+            db.session.commit()
+
+
     @staticmethod
     def get_all():
         return CompanyProfile.query.all()
 
+
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
 
     def __repr__(self) -> str:
         return super().__repr__()
@@ -87,79 +138,71 @@ class Account(db.Model):
     uniquely identified with the "sub" field.
     """
     __tablename__ = 'account'
-    id = db.Column(db.Integer, primary_key=True)
-    given_names = db.Column(db.String(32))
-    surnames = db.Column(db.String(32))
-    company_profile_id = db.Column(db.Integer, db.ForeignKey('company_profile.id', ondelete='CASCADE'), nullable=True)
-    company_profile = db.relationship('CompanyProfile', back_populates='accounts')
     account_type = db.Column(db.Enum(AccountType))
-    email = db.Column(db.String(64), unique=True)
-    job_title = db.Column(db.String(32))
+    company_profile = db.relationship('CompanyProfile', back_populates='accounts')
+    company_profile_id = db.Column(db.Integer, db.ForeignKey('company_profile.id', ondelete='CASCADE'), nullable=True)
     department = db.Column(db.String(32))
+    email = db.Column(db.String(64), unique=True)
+    given_names = db.Column(db.String(32))
+    id = db.Column(db.Integer, primary_key=True)
+    job_title = db.Column(db.String(32))
     phone = db.Column(db.String(13))
     sub = db.Column(db.String(64), unique=True)
+    surnames = db.Column(db.String(32))
+    created_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime)
+
 
     def __init__(
         self,
         email,
         sub,
         account_type = None,
-        given_names = None,
-        surnames = None,
-        job_title = None,
-        department = None,
-        phone = None,
         company_profile_id = None,
-    ) -> None:
-        self.given_names = given_names
-        self.surnames = surnames
-        self.account_type
-        self.email = email
-        self.job_title = job_title
+        department = None,
+        given_names = None,
+        job_title = None,
+        phone = None,
+        surnames = None
+    ):
+        self.account_type = account_type
+        self.company_profile = company_profile_id
+        self.created_at = datetime.utcnow()
         self.department = department
+        self.email = email
+        self.given_names = given_names
+        self.job_title = job_title
         self.phone = phone
         self.sub = sub
-        self.company_profile = company_profile_id
+        self.surnames = surnames
+        self.updated_at = datetime.utcnow()
+
 
     def save(self):
         db.session.add(self)
         db.session.commit()
 
-    @staticmethod
-    def get_all():
-        return Account.query.all()
+
+    def update(self, data):
+        for key, item in data.items():
+            setattr(self, key, item)
+        self.updated_at = datetime.utcnow()
+        db.session.commit()
+
 
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
-    def __repr__(self) -> str:
-        return super().__repr__()
+
+    @staticmethod
+    def get_all():
+        return Account.query.all()
 
 
-class AccountSchema(ma.Schema):
-    account_type = EnumField(AccountType, by_value=True)
+    def get_by_id(id):
+        return Account.query.get(id)
 
-    class Meta:
-        fields = (
-            'given_names',
-            'surnames',
-            'account_type',
-            'email',
-            'job_title',
-            'department',
-            'phone',
-            'sub',
-            'company_profile',
-            '_links',
-        )
 
-    _links = ma.Hyperlinks(
-        {
-            'self': ma.URLFor('accountlistapi', values=dict(id='<id>')),
-            'collections': ma.URLFor('accountlistapi')
-        }
-    )
-
-account_schema = AccountSchema()
-accounts_schema = AccountSchema(many=True)
+    def __repr__(self):
+        return f'<id {self.id}>'
