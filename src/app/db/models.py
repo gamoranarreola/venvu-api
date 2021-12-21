@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from sqlalchemy.dialects import postgresql
 
 from app.db import db
 
@@ -51,8 +52,8 @@ class CompanyProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     is_active = db.Column(db.Boolean, default=False)
     is_tax_id_verified = db.Column(db.Boolean, default=False)
-    key_products = db.Column(db.String(32), default=[])
-    key_services = db.Column(db.String(32), default=[])
+    key_products = db.Column(postgresql.ARRAY(db.String(32)))
+    key_services = db.Column(postgresql.ARRAY(db.String(32)))
     name = db.Column(db.String(64), unique=True)
     parent_company = db.Column(db.String(64))
     postal_code = db.Column(db.String(8))
@@ -64,32 +65,31 @@ class CompanyProfile(db.Model):
 
     def __init__(
         self,
-        accounts,
         address_line_1,
-        address_line_2,
-        address_line_3,
         city,
         country,
         description,
         employee_count_range,
         federal_tax_id,
-        is_active,
-        is_tax_id_verified,
-        key_products,
-        key_services,
         name,
         parent_company,
         postal_code,
         state_province,
         website,
-        yearly_revenue_range
+        yearly_revenue_range,
+        address_line_2 = None,
+        address_line_3 = None,
+        is_active = False,
+        is_tax_id_verified = False,
+        key_products = [],
+        key_services = []
     ):
-        self.accounts = accounts
         self.address_line_1 = address_line_1
         self.address_line_2 = address_line_2
         self.address_line_3 = address_line_3
         self.city = city
         self.country = country
+        self.created_at = datetime.utcnow()
         self.description = description
         self.employee_count_range = employee_count_range
         self.federal_tax_id = federal_tax_id
@@ -101,6 +101,7 @@ class CompanyProfile(db.Model):
         self.parent_company = parent_company
         self.postal_code = postal_code
         self.state_province = state_province
+        self.updated_at = datetime.utcnow()
         self.website = website
         self.yearly_revenue_range = yearly_revenue_range
 
@@ -120,6 +121,9 @@ class CompanyProfile(db.Model):
     @staticmethod
     def get_all():
         return CompanyProfile.query.all()
+
+    def get_by_id(id):
+        return Account.query.get(id)
 
 
     def delete(self):

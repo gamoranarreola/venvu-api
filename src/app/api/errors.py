@@ -13,10 +13,6 @@ class DuplicateResourceError(HTTPException):
     pass
 
 
-class UnauthorizedRoleError(HTTPException):
-    pass
-
-
 class UnauthorizedError(HTTPException):
     pass
 
@@ -27,27 +23,23 @@ class BadRequestError(HTTPException):
 
 errors = {
     'BadRequestError': {
-        'message': '',
+        'message': 'Bad request',
         'status': 400
     },
     'InternalServerError': {
-        'message': '',
+        'message': 'Internal server error',
         'status': 500
     },
     'InvalidQueryError': {
         'message': '',
         'status': 500
     },
-    'UnauthorizedRoleError': {
-        'message': '',
-        'status': 401
-    },
     'UnauthorizedError': {
-        'message': '',
+        'message': 'Unauthorized',
         'status': 401
     },
     'DuplicateResourceError': {
-        'message': '',
+        'message': 'Duplicate resource',
         'status': 409
     }
 }
