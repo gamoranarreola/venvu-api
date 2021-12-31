@@ -1,5 +1,3 @@
-import os
-
 from flask import Flask, app
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
@@ -13,9 +11,9 @@ from app.db import db, init_marshmallow
 
 migrate = Migrate()
 
-def create_app() -> app.Flask:
-    flask_app = Flask(__name__)
-    flask_app.config.from_object(os.environ['CONFIG_SETUP'])
+def create_app(config_filename=None) -> app.Flask:
+    flask_app = Flask(__name__, instance_relative_config=True)
+    flask_app.config.from_pyfile(config_filename)
 
     CORS(flask_app, resources={
         r'/api/*': {

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 935372164c74
+Revision ID: 467074e39611
 Revises: 
-Create Date: 2021-12-21 07:55:18.903969
+Create Date: 2021-12-30 07:13:14.305998
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '935372164c74'
+revision = '467074e39611'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,7 +27,8 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('description', sa.String(length=512), nullable=True),
     sa.Column('employee_count_range', sa.Enum('_1_TO_4', '_5_TO_9', '_10_TO_19', '_20_TO_49', '_50_TO_99', '_100_TO_249', '_250_TO_499', '_500_TO_999', '_1000PLUS', name='employeecountrange'), nullable=True),
-    sa.Column('federal_tax_id', sa.String(length=16), nullable=True),
+    sa.Column('state_tax_id', sa.String(length=16), nullable=True),
+    sa.Column('state_registered', sa.String(length=2), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('is_tax_id_verified', sa.Boolean(), nullable=True),
@@ -41,8 +42,8 @@ def upgrade():
     sa.Column('website', sa.String(length=64), nullable=True),
     sa.Column('yearly_revenue_range', sa.Enum('_U500K', '_500K_TO_999K', '_1MTOU2P5M', '_2P5MTOU5M', '_5MTOU10M', '_10MTOU100M', '_100MTOU500M', '_500MTOU1B', '_1BPLUS', name='yearlyrevenuerange'), nullable=True),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('federal_tax_id'),
     sa.UniqueConstraint('name'),
+    sa.UniqueConstraint('state_tax_id'),
     sa.UniqueConstraint('website')
     )
     op.create_table('account',

@@ -9,9 +9,6 @@ from jose import jwt
 from app.api.errors import UnauthorizedError
 
 
-ALGORITHMS = ['RS256']
-
-
 def get_token_auth_header():
     auth = request.headers.get('Authorization', None)
 
@@ -52,7 +49,7 @@ def requires_auth(f):
                 payload = jwt.decode(
                     token,
                     rsa_key,
-                    algorithms=ALGORITHMS,
+                    algorithms=['RS256'],
                     audience=os.environ.get('API_AUDIENCE'),
                     issuer='https://' + os.environ.get('AUTH0_DOMAIN') + '/'
                 )

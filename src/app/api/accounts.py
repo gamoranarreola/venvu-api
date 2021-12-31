@@ -11,6 +11,11 @@ from app.db.schemas import account_schema
 
 class AccountListApi(Resource):
 
+    """
+    This endpoint will always be called after a user logs on to the VMS through Auth0. If there is no account record
+    in the VMS database with the provided email address, it will be created. If it does exist, it will come simply
+    be retrieved and sent back in the response.
+    """
     @requires_auth
     def post(self) -> Response:
 
@@ -24,6 +29,10 @@ class AccountListApi(Resource):
             req_data = request.get_json()
             account = Account.query.filter_by(email=req_data.get('email')).first()
 
+            """
+            This is a new account. We need to make sure this is not an attempt to create an admin account for a company
+            that already has an admin account.
+            """
             if account is None:
                 account = Account(**req_data)
                 db.session.add(account)

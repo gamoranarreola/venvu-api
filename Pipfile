@@ -17,10 +17,11 @@ flask-sqlalchemy = "==2.5.1"
 flask-marshmallow = "==0.14.0"
 marshmallow-sqlalchemy = "==0.27.0"
 marshmallow-enum = "==1.5.1"
+flask-migrate = "==3.1.0"
+pytest = "*"
+requests = "*"
 
 [dev-packages]
-pytest = "==6.2.5"
-flask-migrate = "==3.1.0"
 
 [requires]
 python_version = "3.9"

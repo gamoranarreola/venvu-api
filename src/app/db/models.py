@@ -48,7 +48,8 @@ class CompanyProfile(db.Model):
     created_at = db.Column(db.DateTime)
     description = db.Column(db.String(512))
     employee_count_range = db.Column(db.Enum(EmployeeCountRange))
-    federal_tax_id = db.Column(db.String(16), unique=True)
+    state_tax_id = db.Column(db.String(16), unique=True)
+    state_registered = db.Column(db.String(2))
     id = db.Column(db.Integer, primary_key=True)
     is_active = db.Column(db.Boolean, default=False)
     is_tax_id_verified = db.Column(db.Boolean, default=False)
@@ -70,7 +71,8 @@ class CompanyProfile(db.Model):
         country,
         description,
         employee_count_range,
-        federal_tax_id,
+        state_tax_id,
+        tax_id_state,
         name,
         parent_company,
         postal_code,
@@ -92,7 +94,8 @@ class CompanyProfile(db.Model):
         self.created_at = datetime.utcnow()
         self.description = description
         self.employee_count_range = employee_count_range
-        self.federal_tax_id = federal_tax_id
+        self.state_tax_id = state_tax_id
+        self.tax_id_state = tax_id_state
         self.is_active = is_active
         self.is_tax_id_verified = is_tax_id_verified
         self.key_products = key_products
@@ -152,6 +155,7 @@ class Account(db.Model):
     job_title = db.Column(db.String(32))
     phone = db.Column(db.String(13))
     sub = db.Column(db.String(64), unique=True)
+    roles = db.Column(postgresql.ARRAY(db.String(32)))
     surnames = db.Column(db.String(32))
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
@@ -167,7 +171,8 @@ class Account(db.Model):
         given_names = None,
         job_title = None,
         phone = None,
-        surnames = None
+        surnames = None,
+        roles = None
     ):
         self.account_type = account_type
         self.company_profile = company_profile_id
@@ -179,6 +184,7 @@ class Account(db.Model):
         self.phone = phone
         self.sub = sub
         self.surnames = surnames
+        self.roles = roles
         self.updated_at = datetime.utcnow()
 
 
