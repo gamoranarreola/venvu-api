@@ -1,33 +1,64 @@
+from flask_migrate import init
 import pytest
 import json
 import requests
 from app import create_app
 from app.db import db
-from app.db.models import Account
+
+from app.db.models import (
+    Account,
+    AccountType,
+    CompanyProfile,
+    EmployeeCountRange,
+    YearlyRevenueRange
+)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture
 def new_account():
-    return Account(email='gmoran@bcdev.works', sub='auth0|61cdcdafe09c83006f1aba14')
+
+    return Account(
+        email='gmoran@bcdev.works',
+        sub='auth0|61cdcdafe09c83006f1aba14'
+    )
 
 
-@pytest.fixture(scope='module')
-def test_client():
+@pytest.fixture
+def new_company_profile():
+
+    return CompanyProfile(
+        address_line_1='1000 Corellian Way',
+        city='Corelliopolis',
+        country='Corellia',
+        description='We build ships',
+        employee_count_range=EmployeeCountRange._1000PLUS,
+        state_tax_id='12-345',
+        tax_id_state='CO',
+        name='Corellian Industries',
+        postal_code='99999',
+        state_province='CO',
+        website='corellianindustries.com',
+        yearly_revenue_range=YearlyRevenueRange._1BPLUS
+    )
+
+
+@pytest.fixture
+def app():
     flask_app = create_app('flask_test.cfg')
-
-    with flask_app.test_client() as testing_client:
-        with flask_app.app_context():
-            yield testing_client
-
-
-@pytest.fixture(scope='module')
-def init_db(test_client):
-    db.create_all()
-    yield
-    db.drop_all()
+    with flask_app.app_context():
+        db.create_all()
+        yield flask_app
+        db.session.remove()
+        db.drop_all()
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture
+def add_admin(new_account, new_company_profile):
+    db.session.add(new_account)
+    db.session.commit()
+
+
+@pytest.fixture
 def get_auth_token():
     url = 'https://dev-dh8aqmc6.us.auth0.com/oauth/token'
     headers = {'Content-Type': 'application/json'}

@@ -74,7 +74,6 @@ class CompanyProfile(db.Model):
         state_tax_id,
         tax_id_state,
         name,
-        parent_company,
         postal_code,
         state_province,
         website,
@@ -84,7 +83,8 @@ class CompanyProfile(db.Model):
         is_active = False,
         is_tax_id_verified = False,
         key_products = [],
-        key_services = []
+        key_services = [],
+        parent_company = None
     ):
         self.address_line_1 = address_line_1
         self.address_line_2 = address_line_2
