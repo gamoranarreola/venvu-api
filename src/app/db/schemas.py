@@ -15,6 +15,7 @@ class AccountSchema(ma.Schema):
     id = fields.Int(dump_only=True)
     job_title = fields.Str()
     phone = fields.Str()
+    roles = fields.List(fields.Str)
     sub = fields.Str()
     surnames = fields.Str()
 

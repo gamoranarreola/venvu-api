@@ -22,6 +22,15 @@ class EmployeeCountRange(Enum):
     _1000PLUS = '1000PLUS'
 
 
+class Roles(Enum):
+    _VENDOR_ADM = 'vendor_admin'
+    _VENDOR_REP = 'vendor_representative'
+    _VENDOR_PUB = 'vendor_publisher'
+    _CONS_ADM = 'consumer_admin'
+    _CONS_REP = 'consumer_representative'
+    _CONS_PUB = 'consumer_publisher'
+
+
 class YearlyRevenueRange(Enum):
     _U500K = 'U500K'
     _500K_TO_999K = '500KTO999K'
@@ -172,7 +181,7 @@ class Account(db.Model):
         job_title = None,
         phone = None,
         surnames = None,
-        roles = None
+        roles = []
     ):
         self.account_type = account_type
         self.company_profile = company_profile_id
@@ -214,5 +223,5 @@ class Account(db.Model):
         return Account.query.get(id)
 
 
-    def __repr__(self):
-        return f'<id {self.id}>'
+    def __repr__(self) -> str:
+        return super().__repr__()

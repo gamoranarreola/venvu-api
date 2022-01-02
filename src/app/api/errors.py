@@ -9,6 +9,10 @@ class InvalidQueryError(HTTPException):
     pass
 
 
+class DuplicateAdminSignupError(HTTPException):
+    pass
+
+
 class DuplicateResourceError(HTTPException):
     pass
 
@@ -37,6 +41,10 @@ errors = {
     'UnauthorizedError': {
         'message': 'Unauthorized',
         'status': 401
+    },
+    'DuplicateAdminSignupError': {
+        'message': 'An admin account already exists for your organization.',
+        'status': 409
     },
     'DuplicateResourceError': {
         'message': 'Duplicate resource',

@@ -10,21 +10,23 @@ from app.db.models import (
     AccountType,
     CompanyProfile,
     EmployeeCountRange,
+    Roles,
     YearlyRevenueRange
 )
 
 
 @pytest.fixture
-def new_account():
+def create_account():
 
     return Account(
         email='gmoran@bcdev.works',
-        sub='auth0|61cdcdafe09c83006f1aba14'
+        sub='auth0|61cdcdafe09c83006f1aba14',
+        roles=[Roles._CONS_ADM.name]
     )
 
 
 @pytest.fixture
-def new_company_profile():
+def create_company_profile():
 
     return CompanyProfile(
         address_line_1='1000 Corellian Way',
@@ -43,6 +45,16 @@ def new_company_profile():
 
 
 @pytest.fixture
+def add_admin(create_account, create_company_profile):
+    account = create_account
+    company_profile = create_company_profile
+    account.company_profile = company_profile
+    db.session.add(account)
+    db.session.add(company_profile)
+    db.session.commit()
+
+
+@pytest.fixture
 def app():
     flask_app = create_app('flask_test.cfg')
     with flask_app.app_context():
@@ -50,12 +62,6 @@ def app():
         yield flask_app
         db.session.remove()
         db.drop_all()
-
-
-@pytest.fixture
-def add_admin(new_account, new_company_profile):
-    db.session.add(new_account)
-    db.session.commit()
 
 
 @pytest.fixture
