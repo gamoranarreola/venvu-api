@@ -1,8 +1,9 @@
-from flask import Flask, app
+from flask import Flask, app, current_app
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_migrate import Migrate
+from celery import Celery
 
 from app.api.routes import create_routes
 from app.api.errors import errors
@@ -28,6 +29,7 @@ def create_app(config_filename=None) -> app.Flask:
     migrate.init_app(flask_app, db)
     api = Api(app=flask_app, errors=errors)
     create_routes(api=api)
+    Celery(flask_app.name, broker=flask_app.config['CELERY_BROKER_URL']).conf.update(flask_app.config)
     jwt = JWTManager(app=flask_app)
 
     return flask_app

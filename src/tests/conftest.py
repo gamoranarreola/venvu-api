@@ -1,13 +1,14 @@
-from flask_migrate import init
+import os
+
+import http.client
 import pytest
 import json
-import requests
+
+from app.api.auth0 import vms_api_app
 from app import create_app
 from app.db import db
-
 from app.db.models import (
     Account,
-    AccountType,
     CompanyProfile,
     EmployeeCountRange,
     Roles,
@@ -65,17 +66,41 @@ def app():
 
 
 @pytest.fixture
-def get_auth_token():
-    url = 'https://dev-dh8aqmc6.us.auth0.com/oauth/token'
-    headers = {'Content-Type': 'application/json'}
+def get_vms_api_auth_token():
+    conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
 
-    params = {
-        'client_id': 'nl7qE0EZL2d0mBc7NAsnwhqarhEsTnTA',
-        'client_secret': 'p2H_Z4w5LAJDcxH4CzEe0ewvt6COHCRf6WbJsyVN5PVvRttUnMo2coa_ElCVgUj8',
-        'audience': 'https://vms-b2b.app',
+    data = {
+        'client_id': vms_api_app.get('client_id'),
+        'client_secret': vms_api_app.get('client_secret'),
+        'audience': os.environ.get('API_AUDIENCE'),
         'grant_type': 'client_credentials'
     }
 
-    response = json.loads(requests.post(url=url, json=params, headers=headers).text)
+    conn.request(
+        'POST',
+        '/oauth/token',
+        json.dumps(data),
+        { 'content-type': 'application/json' }
+    )
 
-    return 'Bearer {}'.format(response['access_token'])
+    return 'Bearer ' + json.loads(conn.getresponse().read()).get('access_token')
+
+
+@pytest.fixture
+def auth0_api_create_user():
+    conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+
+    data = {
+        'email': 'sbassett@bcdev.works',
+        'connection': 'Username-Password-Authentication',
+        'password': 'D$s8dKU7Sp9o'
+    }
+
+    conn.request(
+        'POST',
+        '/api/v2/',
+        json.dumps(data),
+        { 'content-type': 'application/json' }
+    )
+
+    return json.loads(conn.getresponse().read())

@@ -3,10 +3,18 @@ from flask_restful import Resource
 from flask.wrappers import Response
 from sqlalchemy.sql.expression import and_
 
-from app.api.errors import BadRequestError, DuplicateAdminSignupError, InternalServerError
+from app.api.errors import (
+    BadRequestError,
+    DuplicateAdminSignupError,
+    InternalServerError
+)
 from app.api.auth0 import requires_auth
 from app.db.models import Account, Roles
 from app.db.schemas import account_schema
+from app.api.auth0 import (
+    get_auth0_user_by_email,
+    delete_auth0_user
+)
 
 
 class AccountListApi(Resource):
@@ -27,7 +35,7 @@ class AccountListApi(Resource):
             req_data = request.get_json()
 
             # First check if an account exists for that email address.
-            account = Account.query.filter_by(email=req_data.get('email'), sub=req_data.get('sub')).first()
+            account = Account.query.filter_by(email=req_data.get('email')).first()
 
             # New user signup.
             if account is None:
@@ -46,6 +54,13 @@ class AccountListApi(Resource):
                     account.save()
 
                 else:
+                    """
+                    We need a Celery process here that will take the email in the request
+                    and user that to:
+                    1) Query the Auth0 API for that user
+                    2) Delete that user
+                    """
+                    delete_auth0_user(get_auth0_user_by_email(req_data.get('email'))[0].get('user_id'))
                     raise DuplicateAdminSignupError
 
             response_obj['data'] = account_schema.dump(account)

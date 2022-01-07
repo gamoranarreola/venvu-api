@@ -26,7 +26,7 @@ company_profile = {
 """
 In this case, a preexisting user has logged in.
 """
-def test_account_user_exists(app, get_auth_token, add_admin):
+def test_account_user_exists(app, get_vms_api_auth_token, add_admin):
 
     with app.test_client() as client:
 
@@ -37,7 +37,7 @@ def test_account_user_exists(app, get_auth_token, add_admin):
                 'sub': 'auth0|61cdcdafe09c83006f1aba14'
             },
             headers={
-                'Authorization': get_auth_token
+                'authorization': get_vms_api_auth_token
             }
         )
 
@@ -49,7 +49,7 @@ def test_account_user_exists(app, get_auth_token, add_admin):
 In this case, a new user is attempting signup and his or her organization already
 has an admin user.
 """
-def test_create_new_account_has_admin(app, get_auth_token, add_admin):
+def test_create_new_account_has_admin(app, get_vms_api_auth_token, add_admin):
     with app.test_client() as client:
 
         response = client.post(
@@ -59,7 +59,7 @@ def test_create_new_account_has_admin(app, get_auth_token, add_admin):
                 'sub': 'auth0|61cdcdafe09c83006f1aba14'
             },
             headers={
-                'Authorization': get_auth_token
+                'authorization': get_vms_api_auth_token
             }
         )
 
@@ -71,7 +71,7 @@ def test_create_new_account_has_admin(app, get_auth_token, add_admin):
 In this case, a new user is attempting signup and his or her organization
 does not yet have an admin user.
 """
-def test_create_new_account_has_no_admin(app, get_auth_token):
+def test_create_new_account_has_no_admin(app, auth0_api_create_user, get_vms_api_auth_token):
     with app.test_client() as client:
 
         response = client.post(
@@ -81,7 +81,7 @@ def test_create_new_account_has_no_admin(app, get_auth_token):
                 'sub': 'auth0|61cdcdafe09c83006f1aba14'
             },
             headers={
-                'Authorization': get_auth_token
+                'authorization': get_vms_api_auth_token
             }
         )
 

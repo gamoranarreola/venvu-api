@@ -20,6 +20,8 @@ marshmallow-enum = "==1.5.1"
 flask-migrate = "==3.1.0"
 pytest = "*"
 requests = "*"
+flask-mail = "==0.9.1"
+celery = "*"
 
 [dev-packages]
 
