@@ -87,7 +87,7 @@ def requires_auth(f):
 Retrieves an auth token for the Auth0 Management API. The requestor
 is the VMS API App.
 """
-def get_auth0_mgmt_api_token():
+def auth0_get_mgmt_api_token():
     conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
 
     data = {
@@ -107,14 +107,14 @@ def get_auth0_mgmt_api_token():
     return json.loads(conn.getresponse().read()).get('access_token')
 
 
-def get_auth0_user_by_email(email):
+def auth0_get_user_by_email(email):
     conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
 
     conn.request(
         'GET',
         '/api/v2/users-by-email?' + urlencode({ 'email': email }),
         headers={
-            'authorization': 'Bearer ' + get_auth0_mgmt_api_token(),
+            'authorization': 'Bearer ' + auth0_get_mgmt_api_token(),
             'content-type': 'application/json'
         }
     )
@@ -122,14 +122,14 @@ def get_auth0_user_by_email(email):
     return json.loads(conn.getresponse().read())
 
 
-def delete_auth0_user(id):
+def auth0_delete_user(id):
     conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
 
     conn.request(
         'DELETE',
         '/api/v2/users/' + urlencode(id),
         headers={
-            'authorization': 'Bearer ' + get_auth0_mgmt_api_token(),
+            'authorization': 'Bearer ' + auth0_get_mgmt_api_token(),
             'content-type': 'application/json'
         }
     )

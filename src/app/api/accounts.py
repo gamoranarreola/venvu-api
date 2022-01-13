@@ -11,7 +11,7 @@ from app.api.errors import (
 from app.api.auth0 import requires_auth
 from app.db.models import Account, Roles
 from app.db.schemas import account_schema
-from app.tasks import delete_auth0_user
+from app.tasks import delete_user_from_auth0
 
 
 class AccountListApi(Resource):
@@ -51,7 +51,7 @@ class AccountListApi(Resource):
                     account.save()
 
                 else:
-                    delete_auth0_user.apply_async(args=[req_data.get('email')])
+                    delete_user_from_auth0.apply_async(args=[req_data.get('email')])
                     raise DuplicateAdminSignupError
 
             response_obj['data'] = account_schema.dump(account)
