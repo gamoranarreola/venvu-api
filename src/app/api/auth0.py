@@ -4,21 +4,11 @@ import http.client
 from urllib.parse import urlencode
 
 import six
-from flask import request, _request_ctx_stack
+from flask import config, request, _request_ctx_stack
 from functools import wraps
-from jose import jwt
+from jose import jwt, ExpiredSignatureError
 
 from app.api.errors import UnauthorizedError
-
-
-vms_api_app = {
-    'client_id': 'nl7qE0EZL2d0mBc7NAsnwhqarhEsTnTA',
-    'client_secret': 'p2H_Z4w5LAJDcxH4CzEe0ewvt6COHCRf6WbJsyVN5PVvRttUnMo2coa_ElCVgUj8',
-}
-
-auth0_system_api = {
-    'identifier': 'https://' + os.environ.get('AUTH0_DOMAIN') + '/api/v2/'
-}
 
 
 """
@@ -83,55 +73,70 @@ def requires_auth(f):
     return decorated
 
 
-"""
-Retrieves an auth token for the Auth0 Management API. The requestor
-is the VMS API App.
-"""
-def auth0_get_mgmt_api_token():
-    conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
-
-    data = {
-        'client_id': vms_api_app.get('client_id'),
-        'client_secret': vms_api_app.get('client_secret'),
-        'audience': auth0_system_api.get('identifier'),
-        'grant_type': "client_credentials"
+class Auth0:
+    vms_api_app = {
+        'client_id': 'nl7qE0EZL2d0mBc7NAsnwhqarhEsTnTA',
+        'client_secret': 'p2H_Z4w5LAJDcxH4CzEe0ewvt6COHCRf6WbJsyVN5PVvRttUnMo2coa_ElCVgUj8'
     }
 
-    conn.request(
-        'POST',
-        '/oauth/token',
-        json.dumps(data),
-        { 'content-type': 'application/json' }
-    )
-
-    return json.loads(conn.getresponse().read()).get('access_token')
+    auth0_system_api = {
+        'identifier': 'https://' + os.environ.get('AUTH0_DOMAIN') + '/api/v2/'
+    }
 
 
-def auth0_get_user_by_email(email):
-    conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+    """
+    Retrieves an auth token for the Auth0 Management API. The requestor
+    is the VMS API App.
+    """
+    @staticmethod
+    def auth0_get_mgmt_api_token():
 
-    conn.request(
-        'GET',
-        '/api/v2/users-by-email?' + urlencode({ 'email': email }),
-        headers={
-            'authorization': 'Bearer ' + auth0_get_mgmt_api_token(),
-            'content-type': 'application/json'
+        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+
+        data = {
+            'client_id': Auth0.vms_api_app.get('client_id'),
+            'client_secret': Auth0.vms_api_app.get('client_secret'),
+            'audience': Auth0.auth0_system_api.get('identifier'),
+            'grant_type': "client_credentials"
         }
-    )
 
-    return json.loads(conn.getresponse().read())
+        conn.request(
+            'POST',
+            '/oauth/token',
+            json.dumps(data),
+            { 'content-type': 'application/json' }
+        )
+
+        return json.loads(conn.getresponse().read()).get('access_token')
 
 
-def auth0_delete_user(id):
-    conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+    @staticmethod
+    def auth0_get_user_by_email(email):
+        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
 
-    conn.request(
-        'DELETE',
-        '/api/v2/users/' + urlencode(id),
-        headers={
-            'authorization': 'Bearer ' + auth0_get_mgmt_api_token(),
-            'content-type': 'application/json'
-        }
-    )
+        conn.request(
+            'GET',
+            '/api/v2/users-by-email?' + urlencode({ 'email': email }),
+            headers={
+                'authorization': 'Bearer ' + Auth0.auth0_get_mgmt_api_token(),
+                'content-type': 'application/json'
+            }
+        )
 
-    return json.loads(conn.getresponse().read())
+        return json.loads(conn.getresponse().read())
+
+
+    @staticmethod
+    def auth0_delete_user(id):
+        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+
+        conn.request(
+            'DELETE',
+            '/api/v2/users/' + urlencode({'id': id}),
+            headers={
+                'authorization': 'Bearer ' + Auth0.auth0_get_mgmt_api_token(),
+                'content-type': 'application/json'
+            }
+        )
+
+        return json.loads(conn.getresponse().read())

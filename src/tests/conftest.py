@@ -4,7 +4,7 @@ import http.client
 import pytest
 import json
 
-from app.api.auth0 import vms_api_app
+from app.api.auth0 import Auth0
 from app import create_app
 from app.db import db
 from app.db.models import (
@@ -70,8 +70,8 @@ def get_vms_api_auth_token():
     conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
 
     data = {
-        'client_id': vms_api_app.get('client_id'),
-        'client_secret': vms_api_app.get('client_secret'),
+        'client_id': Auth0.vms_api_app.get('client_id'),
+        'client_secret': Auth0.vms_api_app.get('client_secret'),
         'audience': os.environ.get('API_AUDIENCE'),
         'grant_type': 'client_credentials'
     }
