@@ -22,6 +22,7 @@ pytest = "*"
 requests = "*"
 flask-mail = "==0.9.1"
 celery = "*"
+redis = "==4.1.0"
 
 [dev-packages]
 

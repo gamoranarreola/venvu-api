@@ -57,7 +57,7 @@ def add_admin(create_account, create_company_profile):
 
 @pytest.fixture
 def app():
-    flask_app = create_app('flask_test.cfg')
+    flask_app = create_app()
     with flask_app.app_context():
         db.create_all()
         yield flask_app
@@ -98,7 +98,7 @@ def auth0_api_create_user():
 
     conn.request(
         'POST',
-        '/api/v2/',
+        '/api/v2/users',
         json.dumps(data),
         { 'content-type': 'application/json' }
     )

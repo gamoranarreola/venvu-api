@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask_restful import Resource
 from flask.wrappers import Response
-from sqlalchemy.sql.expression import and_
+from sqlalchemy.sql.expression import and_, delete
 
 from app.api.errors import (
     BadRequestError,
@@ -11,10 +11,7 @@ from app.api.errors import (
 from app.api.auth0 import requires_auth
 from app.db.models import Account, Roles
 from app.db.schemas import account_schema
-from app.api.auth0 import (
-    get_auth0_user_by_email,
-    delete_auth0_user
-)
+from app.tasks import delete_auth0_user
 
 
 class AccountListApi(Resource):
@@ -54,13 +51,7 @@ class AccountListApi(Resource):
                     account.save()
 
                 else:
-                    """
-                    We need a Celery process here that will take the email in the request
-                    and user that to:
-                    1) Query the Auth0 API for that user
-                    2) Delete that user
-                    """
-                    delete_auth0_user(get_auth0_user_by_email(req_data.get('email'))[0].get('user_id'))
+                    delete_auth0_user.apply_async(args=[req_data.get('email')])
                     raise DuplicateAdminSignupError
 
             response_obj['data'] = account_schema.dump(account)

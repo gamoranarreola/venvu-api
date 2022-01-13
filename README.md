@@ -1,5 +1,17 @@
-# MongoDB
-If **mongodb** was installed using Homebrew, use the following command to start the server:
+# Startup Commands for Services
+PostgreSQL
 ```
-brew services start mongodb-community@5.0
+/usr/local/opt/postgresql/bin/postgres -D /usr/local/var/postgres
+```
+REDIS
+```
+/usr/local/opt/redis/bin/redis-server /usr/local/etc/redis.conf
+```
+RabbitMQ
+```
+rabbitmq-server
+```
+Celery (must run ```pipenv shell``` from project root first)
+```
+celery -A celery_worker.celery worker --loglevel=info
 ```

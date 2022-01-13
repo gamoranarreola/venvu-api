@@ -1,20 +1,32 @@
-from flask import Flask, app, current_app
+import os
+
+from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_mail import Mail
 from celery import Celery
 
-from app.api.routes import create_routes
+from config import Config
 from app.api.errors import errors
 from app.db import db, init_marshmallow
 
 
+mail = Mail()
 migrate = Migrate()
+celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, result_backend=Config.RESULT_BACKEND)
 
-def create_app(config_filename=None) -> app.Flask:
-    flask_app = Flask(__name__, instance_relative_config=True)
-    flask_app.config.from_pyfile(config_filename)
+from app.api.routes import create_routes
+
+
+"""
+Application factory.
+"""
+def create_app():
+    flask_app = Flask(__name__)
+    flask_app.config.from_object(os.environ.get('CONFIG_SETUP'))
+    celery.conf.update(flask_app.config)
 
     CORS(flask_app, resources={
         r'/api/*': {
@@ -24,12 +36,18 @@ def create_app(config_filename=None) -> app.Flask:
         }
     })
 
-    db.init_app(flask_app)
-    init_marshmallow(flask_app)
-    migrate.init_app(flask_app, db)
-    api = Api(app=flask_app, errors=errors)
-    create_routes(api=api)
-    Celery(flask_app.name, broker=flask_app.config['CELERY_BROKER_URL']).conf.update(flask_app.config)
+    init_extensions(flask_app)
+    create_routes(api=Api(app=flask_app, errors=errors))
     jwt = JWTManager(app=flask_app)
 
     return flask_app
+
+
+"""
+Initialize extensions.
+"""
+def init_extensions(app):
+    db.init_app(app)
+    migrate.init_app(app, db)
+    mail.init_app(app)
+    init_marshmallow(app)
