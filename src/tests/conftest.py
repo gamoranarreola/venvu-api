@@ -18,12 +18,9 @@ from app.db.models import (
 
 @pytest.fixture
 def create_account():
-
-    return Account(
-        email='gmoran@bcdev.works',
-        sub='auth0|61cdcdafe09c83006f1aba14',
-        roles=[Roles._CONS_ADM.name]
-    )
+    def _create_account(account_data):
+        return Account(**account_data)
+    return _create_account
 
 
 @pytest.fixture
@@ -47,7 +44,18 @@ def create_company_profile():
 
 @pytest.fixture
 def add_admin(create_account, create_company_profile):
-    account = create_account
+    email = 'vms_admin@bcdev.works'
+    auth0_admin_user = Auth0.auth0_create_user(email, 's8dKU7Sp9o', True)
+    Auth0.auth0_assign_role(auth0_admin_user.get('user_id'), 'rol_mOHJ7dARVN420281')
+
+    account = create_account(
+        {
+            'email': email,
+            'sub': auth0_admin_user.get('user_id'),
+            'roles': [Roles._VENDOR_ADM.name]
+        }
+    )
+
     company_profile = create_company_profile
     account.company_profile = company_profile
     db.session.add(account)
@@ -63,6 +71,12 @@ def app():
         yield flask_app
         db.session.remove()
         db.drop_all()
+
+        if Auth0.last_vms_admin_user_id is not None:
+            Auth0.auth0_delete_user(Auth0.last_vms_admin_user_id)
+
+        if Auth0.last_vms_user_id is not None:
+            Auth0.auth0_delete_user(Auth0.last_vms_user_id)
 
 
 @pytest.fixture
@@ -88,19 +102,4 @@ def get_vms_api_auth_token():
 
 @pytest.fixture
 def auth0_api_create_user():
-    conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
-
-    data = {
-        'email': 'sbassett@bcdev.works',
-        'connection': 'Username-Password-Authentication',
-        'password': 'D$s8dKU7Sp9o'
-    }
-
-    conn.request(
-        'POST',
-        '/api/v2/users',
-        json.dumps(data),
-        { 'content-type': 'application/json' }
-    )
-
-    return json.loads(conn.getresponse().read())
+    return Auth0.auth0_create_user('vms_user@bcdev.works', 'D$s8dKU7Sp9o')

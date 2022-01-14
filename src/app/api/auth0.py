@@ -2,11 +2,12 @@ import os
 import json
 import http.client
 from urllib.parse import urlencode
+from urllib.request import pathname2url
 
 import six
-from flask import config, request, _request_ctx_stack
+from flask import request, _request_ctx_stack
 from functools import wraps
-from jose import jwt, ExpiredSignatureError
+from jose import jwt
 
 from app.api.errors import UnauthorizedError
 
@@ -83,6 +84,9 @@ class Auth0:
         'identifier': 'https://' + os.environ.get('AUTH0_DOMAIN') + '/api/v2/'
     }
 
+    last_vms_admin_user_id = None
+    last_vms_user_id = None
+
 
     """
     Retrieves an auth token for the Auth0 Management API. The requestor
@@ -104,10 +108,60 @@ class Auth0:
             'POST',
             '/oauth/token',
             json.dumps(data),
-            { 'content-type': 'application/json' }
+            headers={ 'content-type': 'application/json' }
         )
 
         return json.loads(conn.getresponse().read()).get('access_token')
+
+
+    @staticmethod
+    def auth0_create_user(email, password, is_admin=False):
+        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+
+        data = {
+            'email': email,
+            'connection': 'Username-Password-Authentication',
+            'password': password
+        }
+
+        conn.request(
+            'POST',
+            '/api/v2/users',
+            json.dumps(data),
+            headers=Auth0.get_headers()
+        )
+
+        user = json.loads(conn.getresponse().read())
+        print('\n\nauth0_create_user: ' + str(user))
+
+        if is_admin:
+            Auth0.last_vms_admin_user_id = user.get('user_id')
+        else:
+            Auth0.last_vms_user_id = user.get('user_id')
+
+        return user
+
+
+    @staticmethod
+    def auth0_assign_role(user_id, role_id):
+        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+
+        data = {
+            'roles': [
+                role_id
+            ]
+        }
+
+        conn.request(
+            'POST',
+            '/api/v2/users/' + pathname2url(user_id) + '/roles',
+            json.dumps(data),
+            headers=Auth0.get_headers()
+        )
+
+        print('\n\n/api/v2/users/' + pathname2url(user_id) + '/roles')
+        print('\n\nauth0_assign_role: ' + user_id + ' ' + role_id)
+        return conn.getresponse().read()
 
 
     @staticmethod
@@ -117,10 +171,7 @@ class Auth0:
         conn.request(
             'GET',
             '/api/v2/users-by-email?' + urlencode({ 'email': email }),
-            headers={
-                'authorization': 'Bearer ' + Auth0.auth0_get_mgmt_api_token(),
-                'content-type': 'application/json'
-            }
+            headers=Auth0.get_headers()
         )
 
         return json.loads(conn.getresponse().read())
@@ -132,11 +183,17 @@ class Auth0:
 
         conn.request(
             'DELETE',
-            '/api/v2/users/' + urlencode({'id': id}),
-            headers={
-                'authorization': 'Bearer ' + Auth0.auth0_get_mgmt_api_token(),
-                'content-type': 'application/json'
-            }
+            '/api/v2/users/' + pathname2url(id),
+            headers=Auth0.get_headers()
         )
+        print('\n\nauth0_delete_user: ' + id)
+        return conn.getresponse().read()
 
-        return json.loads(conn.getresponse().read())
+
+    @staticmethod
+    def get_headers():
+
+        return {
+            'authorization': 'Bearer ' + Auth0.auth0_get_mgmt_api_token(),
+            'content-type': 'application/json'
+        }

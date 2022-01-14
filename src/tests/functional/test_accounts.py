@@ -1,5 +1,6 @@
 from app import create_app
 from app.db.models import EmployeeCountRange, YearlyRevenueRange
+from app.api.auth0 import Auth0
 
 
 new_user = {
@@ -25,16 +26,19 @@ company_profile = {
 
 """
 In this case, a preexisting user has logged in.
+
+For this test, a regular, non-admin user is created in Auth0 before the test is
+run.
 """
-def test_account_user_exists(app, get_vms_api_auth_token, add_admin):
+def test_account_user_exists(app, get_vms_api_auth_token, auth0_api_create_user):
 
     with app.test_client() as client:
 
         response = client.post(
             '/api/accounts',
             json={
-                'email': 'gmoran@bcdev.works',
-                'sub': 'auth0|61cdcdafe09c83006f1aba14'
+                'email': 'vms_user@bcdev.works',
+                'sub': Auth0.last_vms_admin_user_id
             },
             headers={
                 'authorization': get_vms_api_auth_token
@@ -48,6 +52,8 @@ def test_account_user_exists(app, get_vms_api_auth_token, add_admin):
 """
 In this case, a new user is attempting signup and his or her organization already
 has an admin user.
+
+In this case, an admin user is created in Auth0 before the test is run.
 """
 def test_create_new_account_has_admin(app, get_vms_api_auth_token, add_admin):
     with app.test_client() as client:
@@ -55,7 +61,7 @@ def test_create_new_account_has_admin(app, get_vms_api_auth_token, add_admin):
         response = client.post(
             '/api/accounts',
             json={
-                'email': 'sbassett@bcdev.works',
+                'email': 'gmoran@bcdev.works',
                 'sub': 'auth0|61cdcdafe09c83006f1aba14'
             },
             headers={
@@ -77,7 +83,7 @@ def test_create_new_account_has_no_admin(app, auth0_api_create_user, get_vms_api
         response = client.post(
             '/api/accounts',
             json={
-                'email': 'sbassett@bcdev.works',
+                'email': 'gmoran@bcdev.works',
                 'sub': 'auth0|61cdcdafe09c83006f1aba14'
             },
             headers={

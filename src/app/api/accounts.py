@@ -51,7 +51,7 @@ class AccountListApi(Resource):
                     account.save()
 
                 else:
-                    delete_user_from_auth0.apply_async(args=[req_data.get('email')])
+                    res = delete_user_from_auth0.apply_async(args=[req_data.get('email')])
                     raise DuplicateAdminSignupError
 
             response_obj['data'] = account_schema.dump(account)
