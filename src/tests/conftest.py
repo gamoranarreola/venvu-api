@@ -81,23 +81,25 @@ def app():
 
 @pytest.fixture
 def get_vms_api_auth_token():
-    conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+    def _get_vms_api_auth_token():
+        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
 
-    data = {
-        'client_id': Auth0.vms_api_app.get('client_id'),
-        'client_secret': Auth0.vms_api_app.get('client_secret'),
-        'audience': os.environ.get('API_AUDIENCE'),
-        'grant_type': 'client_credentials'
-    }
+        data = {
+            'client_id': Auth0.vms_api_app.get('client_id'),
+            'client_secret': Auth0.vms_api_app.get('client_secret'),
+            'audience': os.environ.get('API_AUDIENCE'),
+            'grant_type': 'client_credentials'
+        }
 
-    conn.request(
-        'POST',
-        '/oauth/token',
-        json.dumps(data),
-        { 'content-type': 'application/json' }
-    )
+        conn.request(
+            'POST',
+            '/oauth/token',
+            json.dumps(data),
+            { 'content-type': 'application/json' }
+        )
 
-    return 'Bearer ' + json.loads(conn.getresponse().read()).get('access_token')
+        return 'Bearer ' + json.loads(conn.getresponse().read()).get('access_token')
+    return _get_vms_api_auth_token
 
 
 @pytest.fixture

@@ -37,11 +37,11 @@ def test_account_user_exists(app, get_vms_api_auth_token, auth0_api_create_user)
         response = client.post(
             '/api/accounts',
             json={
-                'email': 'vms_user@bcdev.works',
+                'email': 'vms_admnin@bcdev.works',
                 'sub': Auth0.last_vms_admin_user_id
             },
             headers={
-                'authorization': get_vms_api_auth_token
+                'authorization': get_vms_api_auth_token()
             }
         )
 
@@ -65,7 +65,7 @@ def test_create_new_account_has_admin(app, get_vms_api_auth_token, add_admin):
                 'sub': 'auth0|61cdcdafe09c83006f1aba14'
             },
             headers={
-                'authorization': get_vms_api_auth_token
+                'authorization': get_vms_api_auth_token()
             }
         )
 
@@ -87,7 +87,7 @@ def test_create_new_account_has_no_admin(app, auth0_api_create_user, get_vms_api
                 'sub': 'auth0|61cdcdafe09c83006f1aba14'
             },
             headers={
-                'authorization': get_vms_api_auth_token
+                'authorization': get_vms_api_auth_token()
             }
         )
 
