@@ -24,8 +24,8 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
-    RESULT_BACKEND = os.environ.get('RESULT_BACKEND')
+    CELERY_BROKER_URL = os.environ.get('REDIS_URL')
+    RESULT_BACKEND = os.environ.get('REDIS_URL')
 
 
 class DevelopmentConfig(Config):
