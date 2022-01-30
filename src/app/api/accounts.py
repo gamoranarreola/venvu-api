@@ -3,15 +3,15 @@ from flask_restful import Resource
 from flask.wrappers import Response
 from sqlalchemy.sql.expression import and_
 
-from app.api.errors import (
+from ...app.api.errors import (
     BadRequestError,
     DuplicateAdminSignupError,
     InternalServerError
 )
-from app.api.auth0 import requires_auth
-from app.db.models import Account, Roles
-from app.db.schemas import account_schema
-from app.tasks import delete_user_from_auth0
+from ...app.api.auth0 import requires_auth
+from ...app.db.models import Account, Roles
+from ...app.db.schemas import account_schema
+from ...app.tasks import delete_user_from_auth0
 
 
 class AccountListApi(Resource):
@@ -42,12 +42,12 @@ class AccountListApi(Resource):
                 2) Has an admin role (vendor admin or consumer admin)
                 """
                 email_domain = req_data.get('email').split('@')[1]
-                admin_account = Account.query.filter(and_(Account.email.contains(email_domain), Account.roles.overlap([Roles._VENDOR_ADM.name, Roles._CONS_ADM.name]))).first()
+                admin_account = Account.query.filter(and_(Account.email.contains(email_domain), Account.roles.overlap([Roles._VND_ADM.name, Roles._CNS_ADM.name]))).first()
 
                 if admin_account is None:
                     # Create the account and assign both types of admin roles temporarily
                     account = Account(**req_data)
-                    account.roles = [Roles._VENDOR_ADM.name, Roles._CONS_ADM.name]
+                    account.roles = [Roles._VND_ADM.name, Roles._CNS_ADM.name]
                     account.save()
 
                 else:

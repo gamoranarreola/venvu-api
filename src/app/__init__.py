@@ -8,16 +8,20 @@ from flask_migrate import Migrate
 from flask_mail import Mail
 from celery import Celery
 
-from config import Config
-from app.api.errors import errors
-from app.db import db, init_marshmallow
+from ..config import Config
+
+if os.environ.get('CONFIG_SETUP') == 'development':
+    from ..config import DevelopmentConfig as UseConfig
+
+from ..app.api.errors import errors
+from ..app.db import db, init_marshmallow
 
 
 mail = Mail()
 migrate = Migrate()
 celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, result_backend=Config.RESULT_BACKEND)
 
-from app.api.routes import create_routes
+from ..app.api.routes import create_routes
 
 
 """
@@ -25,13 +29,14 @@ Application factory.
 """
 def create_app():
     flask_app = Flask(__name__)
-    flask_app.config.from_object(os.environ.get('CONFIG_SETUP'))
+    flask_app.config.from_object(UseConfig)
     celery.conf.update(flask_app.config)
 
     CORS(flask_app, resources={
         r'/api/*': {
             'origins': [
-                'http://localhost:4200'
+                'http://localhost:4200',
+                'https://vms-22-fe.herokuapp.com'
             ]
         }
     })

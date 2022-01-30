@@ -1,7 +1,7 @@
 from marshmallow_enum import EnumField
 from marshmallow import fields
 
-from app.db import ma
+from ...app.db import ma
 from .models import AccountType, EmployeeCountRange, YearlyRevenueRange
 
 

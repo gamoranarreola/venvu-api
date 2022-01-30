@@ -2,45 +2,45 @@ from datetime import datetime
 from enum import Enum
 from sqlalchemy.dialects import postgresql
 
-from app.db import db
+from ...app.db import db
 
 
 class AccountType(Enum):
-    _CONSUMER = 'CONS'
-    _VENDOR = 'VEND'
+    _CNS = 'consumer'
+    _VND = 'vendor'
 
 
 class EmployeeCountRange(Enum):
-    _1_TO_4 = '1TO4'
-    _5_TO_9 = '5TO9'
-    _10_TO_19 = '10TO19'
-    _20_TO_49 = '20TO49'
-    _50_TO_99 = '50TO99'
-    _100_TO_249 = '100TO249'
-    _250_TO_499 = '250TO499'
-    _500_TO_999 = '500TO999'
-    _1000PLUS = '1000PLUS'
+    _1_TO_4 = '1 to 4'
+    _5_TO_9 = '5 to 9'
+    _10_TO_19 = '10 to 19'
+    _20_TO_49 = '20 to 49'
+    _50_TO_99 = '50 to 99'
+    _100_TO_249 = '100 to 249'
+    _250_TO_499 = '250 to 499'
+    _500_TO_999 = '500 to 999'
+    _1000PLUS = '1000 +'
 
 
 class Roles(Enum):
-    _VENDOR_ADM = 'vendor_admin'
-    _VENDOR_REP = 'vendor_representative'
-    _VENDOR_PUB = 'vendor_publisher'
-    _CONS_ADM = 'consumer_admin'
-    _CONS_REP = 'consumer_representative'
-    _CONS_PUB = 'consumer_publisher'
+    _VND_ADM = 'vendor admin'
+    _VND_REP = 'vendor representative'
+    _VND_PUB = 'vendor publisher'
+    _CNS_ADM = 'consumer admin'
+    _CNS_REP = 'consumer representative'
+    _CNS_PUB = 'consumer publisher'
 
 
 class YearlyRevenueRange(Enum):
-    _U500K = 'U500K'
-    _500K_TO_999K = '500KTO999K'
-    _1MTOU2P5M = '1MTOU2P5M'
-    _2P5MTOU5M = '2P5MTOU5M'
-    _5MTOU10M = '5MTOU10M'
-    _10MTOU100M = '10MTOU100M'
-    _100MTOU500M = '100MTOU500M'
-    _500MTOU1B = '500MTOU1B'
-    _1BPLUS = '1BPLUS'
+    _U500K = 'Under $500,000'
+    _500K_TO_999K = '$500,000 to $999,999'
+    _1MTOU2P5M = '$1,000,000 to $2,499,999'
+    _2P5MTOU5M = '$2,500,000 to $4,999,999'
+    _5MTOU10M = '$5,000,000 to $9,999,999'
+    _10MTOU100M = '$10,000,000 to $99,999,999'
+    _100MTOU500M = '$100,000,000 to $499,999,999'
+    _500MTOU1B = '$500,000,000 to $999,999,999'
+    _1BPLUS = '$1,000,000,000 +'
 
 
 class CompanyProfile(db.Model):
