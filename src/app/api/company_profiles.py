@@ -2,11 +2,11 @@ from flask import request, jsonify
 from flask_restful import Resource
 from flask.wrappers import Response
 
-from ...app.api.errors import BadRequestError, InternalServerError
-from ...app.api.auth0 import requires_auth
-from ...app.db import db
-from ...app.db.models import Account, CompanyProfile
-from ...app.db.schemas import company_profile_schema
+from app.api.errors import BadRequestError, InternalServerError
+from app.api.auth0 import requires_auth
+from app.db import db
+from app.db.models import Account, CompanyProfile
+from app.db.schemas import company_profile_schema
 
 
 class CompanyProfileListApi(Resource):

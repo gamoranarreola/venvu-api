@@ -8,20 +8,20 @@ from flask_migrate import Migrate
 from flask_mail import Mail
 from celery import Celery
 
-from ..config import Config
+from config import Config
 
 if os.environ.get('CONFIG_SETUP') == 'development':
-    from ..config import DevelopmentConfig as UseConfig
+    from config import DevelopmentConfig as UseConfig
 
-from ..app.api.errors import errors
-from ..app.db import db, init_marshmallow
+from app.api.errors import errors
+from app.db import db, init_marshmallow
 
 
 mail = Mail()
 migrate = Migrate()
 celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, result_backend=Config.RESULT_BACKEND)
 
-from ..app.api.routes import create_routes
+from app.api.routes import create_routes
 
 
 """

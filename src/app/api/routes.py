@@ -1,7 +1,7 @@
 from flask_restful import Api
 
-from ...app.api.accounts import AccountApi, AccountListApi
-from ...app.api.company_profiles import CompanyProfileApi, CompanyProfileListApi
+from app.api.accounts import AccountApi, AccountListApi
+from app.api.company_profiles import CompanyProfileApi, CompanyProfileListApi
 
 
 def create_routes(api: Api):

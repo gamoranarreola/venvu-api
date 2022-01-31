@@ -1,7 +1,5 @@
-from flask_mail import Message
-
 from . import celery
-from ..app.api.auth0 import Auth0
+from app.api.auth0 import Auth0
 
 
 @celery.task(name='app.tasks.delete_user_from_auth0')

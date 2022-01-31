@@ -3,15 +3,15 @@ from flask_restful import Resource
 from flask.wrappers import Response
 from sqlalchemy.sql.expression import and_
 
-from ...app.api.errors import (
+from app.api.errors import (
     BadRequestError,
     DuplicateAdminSignupError,
     InternalServerError
 )
-from ...app.api.auth0 import requires_auth
-from ...app.db.models import Account, Roles
-from ...app.db.schemas import account_schema
-from ...app.tasks import delete_user_from_auth0
+from app.api.auth0 import requires_auth
+from app.db.models import Account, Roles
+from app.db.schemas import account_schema
+from app.tasks import delete_user_from_auth0
 
 
 class AccountListApi(Resource):

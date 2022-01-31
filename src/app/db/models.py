@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 from sqlalchemy.dialects import postgresql
 
-from ...app.db import db
+from app.db import db
 
 
 class AccountType(Enum):
