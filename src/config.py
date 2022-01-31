@@ -30,7 +30,12 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    uri = os.environ.get('DATABASE_URL')
+
+    if uri.startswith('postgres://'):
+        SQLALCHEMY_DATABASE_URI = uri.replace('postgres://', 'postgresql://', 1)
+    else:
+        SQLALCHEMY_DATABASE_URI = uri
 
 
 class TestingConfig(Config):
