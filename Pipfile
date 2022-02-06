@@ -18,10 +18,10 @@ flask-marshmallow = "==0.14.0"
 marshmallow-sqlalchemy = "==0.27.0"
 marshmallow-enum = "==1.5.1"
 flask-migrate = "==3.1.0"
-pytest = "*"
-requests = "*"
+pytest = "==7.0.0"
+requests = "==2.27.1"
 flask-mail = "==0.9.1"
-celery = "*"
+celery = "==5.2.3"
 redis = "==4.1.0"
 
 [dev-packages]

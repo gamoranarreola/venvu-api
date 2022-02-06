@@ -1,16 +1,19 @@
 """empty message
 
-Revision ID: a16ea9fefdab
-Revises: 
-Create Date: 2022-01-31 06:59:43.761788
+Revision ID: 10798d868550
+Revises:
+Create Date: 2022-02-06 10:23:54.442452
 
 """
+from datetime import datetime
+
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = 'a16ea9fefdab'
+revision = '10798d868550'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -46,7 +49,7 @@ def upgrade():
     sa.UniqueConstraint('state_tax_id'),
     sa.UniqueConstraint('website')
     )
-    op.create_table('account',
+    account_table = op.create_table('account',
     sa.Column('account_type', sa.Enum('_CNS', '_VND', name='accounttype'), nullable=True),
     sa.Column('company_profile_id', sa.Integer(), nullable=True),
     sa.Column('department', sa.String(length=32), nullable=True),
@@ -66,6 +69,45 @@ def upgrade():
     sa.UniqueConstraint('sub')
     )
     # ### end Alembic commands ###
+
+    # Seed accounts
+    op.bulk_insert(
+        account_table,
+        [
+            {
+                'email': 'vrep@vmstest.com',
+                'sub': 'auth0|61ff498943fb670069baefbd',
+                'account_type': '_VND',
+                'roles': ['_VND_REP'],
+                'created_at': datetime.now(),
+                'updated_at': datetime.now()
+            },
+            {
+                'email': 'vpub@vmstest.com',
+                'sub': 'auth0|61545633ff86f6006a3241ca',
+                'account_type': '_VND',
+                'roles': ['_VND_PUB'],
+                'created_at': datetime.now(),
+                'updated_at': datetime.now()
+            },
+            {
+                'email': 'crep@vmstest.com',
+                'sub': 'auth0|6154557aff86f6006a32419c',
+                'account_type': '_CNS',
+                'roles': ['_CNS_REP'],
+                'created_at': datetime.now(),
+                'updated_at': datetime.now()
+            },
+            {
+                'email': 'cpub@vmstest.com',
+                'sub': 'auth0|615455a8fe39bb00691e01a3',
+                'account_type': '_CNS',
+                'roles': ['_CNS_PUB'],
+                'created_at': datetime.now(),
+                'updated_at': datetime.now()
+            },
+        ]
+    )
 
 
 def downgrade():
