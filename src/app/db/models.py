@@ -72,7 +72,6 @@ class CompanyProfile(db.Model):
     website = db.Column(db.String(64), unique=True)
     yearly_revenue_range = db.Column(db.Enum(YearlyRevenueRange))
 
-
     def __init__(
         self,
         address_line_1,
@@ -87,13 +86,13 @@ class CompanyProfile(db.Model):
         state_province,
         website,
         yearly_revenue_range,
-        address_line_2 = None,
-        address_line_3 = None,
-        is_active = False,
-        is_tax_id_verified = False,
-        key_products = [],
-        key_services = [],
-        parent_company = None
+        address_line_2=None,
+        address_line_3=None,
+        is_active=False,
+        is_tax_id_verified=False,
+        key_products=[],
+        key_services=[],
+        parent_company=None
     ):
         self.address_line_1 = address_line_1
         self.address_line_2 = address_line_2
@@ -117,18 +116,15 @@ class CompanyProfile(db.Model):
         self.website = website
         self.yearly_revenue_range = yearly_revenue_range
 
-
     def save(self):
         db.session.add(self)
         db.session.commit()
 
-
     def update(self, data):
-            for key, item in data.items():
-                setattr(self, key, item)
-            self.updated_at = datetime.utcnow()
-            db.session.commit()
-
+        for key, item in data.items():
+            setattr(self, key, item)
+        self.updated_at = datetime.utcnow()
+        db.session.commit()
 
     @staticmethod
     def get_all():
@@ -137,11 +133,9 @@ class CompanyProfile(db.Model):
     def get_by_id(id):
         return Account.query.get(id)
 
-
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-
 
     def __repr__(self) -> str:
         return super().__repr__()
@@ -169,19 +163,18 @@ class Account(db.Model):
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
 
-
     def __init__(
         self,
         email,
         sub,
-        account_type = None,
-        company_profile_id = None,
-        department = None,
-        given_names = None,
-        job_title = None,
-        phone = None,
-        surnames = None,
-        roles = []
+        account_type=None,
+        company_profile_id=None,
+        department=None,
+        given_names=None,
+        job_title=None,
+        phone=None,
+        surnames=None,
+        roles=[]
     ):
         self.account_type = account_type
         self.company_profile = company_profile_id
@@ -196,11 +189,9 @@ class Account(db.Model):
         self.roles = roles
         self.updated_at = datetime.utcnow()
 
-
     def save(self):
         db.session.add(self)
         db.session.commit()
-
 
     def update(self, data):
         for key, item in data.items():
@@ -208,20 +199,16 @@ class Account(db.Model):
         self.updated_at = datetime.utcnow()
         db.session.commit()
 
-
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-
 
     @staticmethod
     def get_all():
         return Account.query.all()
 
-
     def get_by_id(id):
         return Account.query.get(id)
-
 
     def __repr__(self) -> str:
         return super().__repr__()

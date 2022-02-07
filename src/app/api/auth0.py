@@ -12,9 +12,6 @@ from jose import jwt
 from app.api.errors import UnauthorizedError
 
 
-"""
-From Auth0 sample.
-"""
 def get_token_auth_header():
     auth = request.headers.get('Authorization', None)
 
@@ -31,14 +28,12 @@ def get_token_auth_header():
     return token
 
 
-"""
-From Auth0 sample.
-"""
 def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = get_token_auth_header()
-        jsonurl = six.moves.urllib.request.urlopen('https://' + os.environ.get('AUTH0_DOMAIN') + '/.well-known/jwks.json')
+        jsonurl = six.moves.urllib.request.urlopen(
+            'https://' + os.environ.get('AUTH0_DOMAIN') + '/.well-known/jwks.json')
         jwks = json.loads(jsonurl.read())
         unverified_header = jwt.get_unverified_header(token)
         rsa_key = {}
@@ -87,11 +82,11 @@ class Auth0:
     last_vms_admin_user_id = None
     last_vms_user_id = None
 
-
     """
     Retrieves an auth token for the Auth0 Management API. The requestor
     is the VMS API App.
     """
+
     @staticmethod
     def auth0_get_mgmt_api_token():
 
@@ -108,11 +103,10 @@ class Auth0:
             'POST',
             '/oauth/token',
             json.dumps(data),
-            headers={ 'content-type': 'application/json' }
+            headers={'content-type': 'application/json'}
         )
 
         return json.loads(conn.getresponse().read()).get('access_token')
-
 
     @staticmethod
     def auth0_create_user(email, password, is_admin=False):
@@ -141,7 +135,6 @@ class Auth0:
 
         return user
 
-
     @staticmethod
     def auth0_assign_role(user_id, role_id):
         conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
@@ -163,19 +156,17 @@ class Auth0:
         print('\n\nauth0_assign_role: ' + user_id + ' ' + role_id)
         return conn.getresponse().read()
 
-
     @staticmethod
     def auth0_get_user_by_email(email):
         conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
 
         conn.request(
             'GET',
-            '/api/v2/users-by-email?' + urlencode({ 'email': email }),
+            '/api/v2/users-by-email?' + urlencode({'email': email}),
             headers=Auth0.get_headers()
         )
 
         return json.loads(conn.getresponse().read())
-
 
     @staticmethod
     def auth0_delete_user(id):
@@ -188,7 +179,6 @@ class Auth0:
         )
         print('\n\nauth0_delete_user: ' + id)
         return conn.getresponse().read()
-
 
     @staticmethod
     def get_headers():

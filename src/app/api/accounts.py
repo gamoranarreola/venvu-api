@@ -42,12 +42,21 @@ class AccountListApi(Resource):
                 2) Has an admin role (vendor admin or consumer admin)
                 """
                 email_domain = req_data.get('email').split('@')[1]
-                admin_account = Account.query.filter(and_(Account.email.contains(email_domain), Account.roles.overlap([Roles._VND_ADM.name, Roles._CNS_ADM.name]))).first()
+
+                admin_account = Account.query.filter(
+                    and_(
+                        Account.email.contains(email_domain),
+                        Account.roles.overlap([
+                            Roles['_VND_ADM'].name,
+                            Roles['_CNS_ADM'].name
+                        ])
+                    )
+                ).first()
 
                 if admin_account is None:
                     # Create the account and assign both types of admin roles temporarily
                     account = Account(**req_data)
-                    account.roles = [Roles._VND_ADM.name, Roles._CNS_ADM.name]
+                    account.roles = [Roles['_VND_ADM'].name, Roles['_CNS_ADM'].name]
                     account.save()
 
                 else:

@@ -16,7 +16,6 @@ if os.environ.get('CONFIG_SETUP') == 'development':
 from app.api.errors import errors
 from app.db import db, init_marshmallow
 
-
 mail = Mail()
 migrate = Migrate()
 celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, result_backend=Config.RESULT_BACKEND)
@@ -24,9 +23,6 @@ celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, result_backend=Config
 from app.api.routes import create_routes
 
 
-"""
-Application factory.
-"""
 def create_app():
     flask_app = Flask(__name__)
     flask_app.config.from_object(UseConfig)
@@ -48,9 +44,6 @@ def create_app():
     return flask_app
 
 
-"""
-Initialize extensions.
-"""
 def init_extensions(app):
     db.init_app(app)
     migrate.init_app(app, db)
