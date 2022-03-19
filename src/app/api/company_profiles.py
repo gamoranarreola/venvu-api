@@ -1,12 +1,12 @@
+from unicodedata import name
 from flask import request, jsonify
 from flask_restful import Resource
 from flask.wrappers import Response
 
 from app.api.errors import BadRequestError, InternalServerError
 from app.api.auth0 import requires_auth
-from app.db import db
-from app.db.models import Account, CompanyProfile
-from app.db.schemas import company_profile_schema
+from app.db.models import Account, CompanyProfile, Role, AccountType
+from app.db.schemas import company_profile_schema, account_schema
 
 
 class CompanyProfileListApi(Resource):
@@ -54,12 +54,29 @@ class CompanyProfileListApi(Resource):
                 is found, create it.
                 """
                 if company_profile is None:
-                    company_profile = CompanyProfile(**req_data)
-                    db.session.add(company_profile)
-                    db.session.commit()
 
-                response_obj['data'] = company_profile_schema.dump(company_profile)
+                    company_profile = CompanyProfile(**req_data.get('company_profile'))
+                    company_profile.accounts.append(account)
+                    company_profile.save()
 
+                    account_data = {**req_data.get('account')}
+                    account_data['account_type'] = AccountType[account_data['account_type']]
+
+                    if account_data['account_type'] == AccountType._CNS:
+                        account_data['roles'] = [Role._CNS_ADM]
+                    elif account_data['account_type'] == AccountType._VND:
+                        account_data['roles'] = [Role._VND_ADM]
+
+                    account.update(
+                        account_schema.load(
+                            data=account_data,
+                            partial=True
+                        )
+                    )
+
+            response_obj['data'] = company_profile_schema.dump(company_profile)
+            response_obj['success'] = True
+            status_code = 200
             response = jsonify(response_obj)
             response.status_code = status_code
 

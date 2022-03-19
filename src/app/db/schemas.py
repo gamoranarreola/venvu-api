@@ -2,7 +2,7 @@ from marshmallow_enum import EnumField
 from marshmallow import fields
 
 from app.db import ma
-from .models import AccountType, EmployeeCountRange, YearlyRevenueRange
+from .models import AccountType, EmployeeCountRange, YearlyRevenueRange, Role
 
 
 class AccountSchema(ma.Schema):
@@ -14,7 +14,7 @@ class AccountSchema(ma.Schema):
     id = fields.Int(dump_only=True)
     job_title = fields.Str()
     phone = fields.Str()
-    roles = fields.List(fields.Str)
+    roles = fields.List(EnumField(Role, by_value=True))
     sub = fields.Str()
     surnames = fields.Str()
 
@@ -41,7 +41,9 @@ class CompanyProfileSchema(ma.Schema):
     name = fields.Str()
     parent_company = fields.Str()
     postal_code = fields.Str()
+    state_tax_id = fields.Str()
     state_province = fields.Str()
+    tax_id_state = fields.Str()
     website = fields.Str()
     yearly_revenue_range = EnumField(YearlyRevenueRange, by_value=True)
 

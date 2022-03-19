@@ -5,3 +5,4 @@ DROP TABLE IF EXISTS alembic_version CASCADE;
 DROP TYPE IF EXISTS accounttype;
 DROP TYPE IF EXISTS employeecountrange;
 DROP TYPE IF EXISTS yearlyrevenuerange;
+DROP TYPE IF EXISTS role;

@@ -8,8 +8,9 @@ from app.api.errors import (
     DuplicateAdminSignupError,
     InternalServerError
 )
+
 from app.api.auth0 import requires_auth
-from app.db.models import Account, Roles
+from app.db.models import Account, Role
 from app.db.schemas import account_schema
 from app.tasks import delete_user_from_auth0
 
@@ -47,8 +48,8 @@ class AccountListApi(Resource):
                     and_(
                         Account.email.contains(email_domain),
                         Account.roles.overlap([
-                            Roles['_VND_ADM'].name,
-                            Roles['_CNS_ADM'].name
+                            Role._VND_ADM,
+                            Role._CNS_ADM
                         ])
                     )
                 ).first()
@@ -56,7 +57,7 @@ class AccountListApi(Resource):
                 if admin_account is None:
                     # Create the account and assign both types of admin roles temporarily
                     account = Account(**req_data)
-                    account.roles = [Roles['_VND_ADM'].name, Roles['_CNS_ADM'].name]
+                    account.roles = [Role._VND_ADM, Role._CNS_ADM]
                     account.save()
 
                 else:

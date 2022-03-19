@@ -1,5 +1,5 @@
 from app import create_app
-from app.db.models import EmployeeCountRange, YearlyRevenueRange
+from app.db.models import AccountType, EmployeeCountRange, YearlyRevenueRange, Role
 from app.api.auth0 import Auth0
 
 
@@ -85,6 +85,31 @@ def test_create_new_account_has_no_admin(app, auth0_api_create_user, get_vms_api
             json={
                 'email': 'gmoran@bcdev.works',
                 'sub': 'auth0|61cdcdafe09c83006f1aba14'
+            },
+            headers={
+                'authorization': get_vms_api_auth_token()
+            }
+        )
+
+        print('\n\nTEST OUTPUT:\n {}'.format(response.json))
+        assert response.status_code == 200
+
+
+"""
+In this case, an admin user exists and is completing signup (account type and admin info)
+"""
+def test_update_account(app, add_admin_no_company_profile, get_vms_api_auth_token):
+    with app.test_client() as client:
+
+        response = client.put(
+            '/api/accounts/1',
+            json={
+                'account_type': AccountType._CNS.value,
+                'given_names': 'Guillermo Alberto',
+                'surnames': 'Moran-Arreola',
+                'department': 'IT',
+                'job_title': 'Manager',
+                'roles': [Role._CNS_ADM.value]
             },
             headers={
                 'authorization': get_vms_api_auth_token()

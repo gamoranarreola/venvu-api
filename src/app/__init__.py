@@ -9,12 +9,13 @@ from flask_mail import Mail
 from celery import Celery
 
 from config import Config
+from app.api.errors import errors
+from app.db import db, init_marshmallow
 
 if os.environ.get('CONFIG_SETUP') == 'development':
     from config import DevelopmentConfig as UseConfig
-
-from app.api.errors import errors
-from app.db import db, init_marshmallow
+elif os.environ.get('CONFIG_SETUP') == 'testing':
+    from config import TestingConfig as UseConfig
 
 mail = Mail()
 migrate = Migrate()

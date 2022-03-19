@@ -11,7 +11,7 @@ from app.db.models import (
     Account,
     CompanyProfile,
     EmployeeCountRange,
-    Roles,
+    Role,
     YearlyRevenueRange
 )
 
@@ -52,7 +52,7 @@ def add_admin(create_account, create_company_profile):
         {
             'email': email,
             'sub': auth0_admin_user.get('user_id'),
-            'roles': [Roles._VENDOR_ADM.name]
+            'roles': [Role['_VND_ADM']]
         }
     )
 
@@ -60,6 +60,24 @@ def add_admin(create_account, create_company_profile):
     account.company_profile = company_profile
     db.session.add(account)
     db.session.add(company_profile)
+    db.session.commit()
+
+
+@pytest.fixture
+def add_admin_no_company_profile(create_account):
+    email = 'vms_admin@bcdev.works'
+    auth0_admin_user = Auth0.auth0_create_user(email, 's8dKU7Sp9o', True)
+    Auth0.auth0_assign_role(auth0_admin_user.get('user_id'), 'rol_mOHJ7dARVN420281')
+
+    account = create_account(
+        {
+            'email': email,
+            'sub': auth0_admin_user.get('user_id'),
+            'roles': [Role['_VND_ADM']]
+        }
+    )
+
+    db.session.add(account)
     db.session.commit()
 
 

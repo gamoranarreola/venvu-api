@@ -6,41 +6,41 @@ from app.db import db
 
 
 class AccountType(Enum):
-    _CNS = 'consumer'
-    _VND = 'vendor'
+    _CNS = 'CNS'
+    _VND = 'VND'
+
+
+class Role(Enum):
+    _VND_ADM = 'VND_ADM'
+    _VND_REP = 'VND_REP'
+    _VND_PUB = 'VND_PUB'
+    _CNS_ADM = 'CNS_ADM'
+    _CNS_REP = 'CNS_REP'
+    _CNS_PUB = 'CNS_PUB'
 
 
 class EmployeeCountRange(Enum):
-    _1_TO_4 = '1 to 4'
-    _5_TO_9 = '5 to 9'
-    _10_TO_19 = '10 to 19'
-    _20_TO_49 = '20 to 49'
-    _50_TO_99 = '50 to 99'
-    _100_TO_249 = '100 to 249'
-    _250_TO_499 = '250 to 499'
-    _500_TO_999 = '500 to 999'
-    _1000PLUS = '1000 +'
-
-
-class Roles(Enum):
-    _VND_ADM = 'vendor admin'
-    _VND_REP = 'vendor representative'
-    _VND_PUB = 'vendor publisher'
-    _CNS_ADM = 'consumer admin'
-    _CNS_REP = 'consumer representative'
-    _CNS_PUB = 'consumer publisher'
+    _1_TO_4 = '1_TO_4'
+    _5_TO_9 = '5_TO_9'
+    _10_TO_19 = '10_TO_19'
+    _20_TO_49 = '20_TO_49'
+    _50_TO_99 = '50_TO_99'
+    _100_TO_249 = '100_TO_249'
+    _250_TO_499 = '250_TO_499'
+    _500_TO_999 = '500_TO_999'
+    _1000PLUS = '1000PLUS'
 
 
 class YearlyRevenueRange(Enum):
-    _U500K = 'Under $500,000'
-    _500K_TO_999K = '$500,000 to $999,999'
-    _1MTOU2P5M = '$1,000,000 to $2,499,999'
-    _2P5MTOU5M = '$2,500,000 to $4,999,999'
-    _5MTOU10M = '$5,000,000 to $9,999,999'
-    _10MTOU100M = '$10,000,000 to $99,999,999'
-    _100MTOU500M = '$100,000,000 to $499,999,999'
-    _500MTOU1B = '$500,000,000 to $999,999,999'
-    _1BPLUS = '$1,000,000,000 +'
+    _U500K = 'U500K'
+    _500K_TO_999K = '500K_TO_999K'
+    _1M_TO_U2P5M = '1M_TO_U2P5M'
+    _2P5M_TO_U5M = '2P5M_TO_U5M'
+    _5M_TO_U10M = '5M_TO_U10M'
+    _10M_TO_U100M = '10M_TO_U100M'
+    _100M_TO_U500M = '100M_TO_U500M'
+    _500M_TO_U1B = '500M_TO_U1B'
+    _1BPLUS = '1BPLUS'
 
 
 class CompanyProfile(db.Model):
@@ -57,8 +57,6 @@ class CompanyProfile(db.Model):
     created_at = db.Column(db.DateTime)
     description = db.Column(db.String(512))
     employee_count_range = db.Column(db.Enum(EmployeeCountRange))
-    state_tax_id = db.Column(db.String(16), unique=True)
-    state_registered = db.Column(db.String(2))
     id = db.Column(db.Integer, primary_key=True)
     is_active = db.Column(db.Boolean, default=False)
     is_tax_id_verified = db.Column(db.Boolean, default=False)
@@ -68,24 +66,26 @@ class CompanyProfile(db.Model):
     parent_company = db.Column(db.String(64))
     postal_code = db.Column(db.String(8))
     state_province = db.Column(db.String(32))
+    state_tax_id = db.Column(db.String(16), unique=True)
+    tax_id_state = db.Column(db.String(2))
     updated_at = db.Column(db.DateTime)
     website = db.Column(db.String(64), unique=True)
     yearly_revenue_range = db.Column(db.Enum(YearlyRevenueRange))
 
     def __init__(
         self,
-        address_line_1,
-        city,
-        country,
-        description,
-        employee_count_range,
+        name,
         state_tax_id,
         tax_id_state,
-        name,
-        postal_code,
-        state_province,
-        website,
-        yearly_revenue_range,
+        address_line_1=None,
+        city=None,
+        country=None,
+        description=None,
+        employee_count_range=None,
+        postal_code=None,
+        state_province=None,
+        website=None,
+        yearly_revenue_range=None,
         address_line_2=None,
         address_line_3=None,
         is_active=False,
@@ -158,7 +158,7 @@ class Account(db.Model):
     job_title = db.Column(db.String(32))
     phone = db.Column(db.String(13))
     sub = db.Column(db.String(64), unique=True)
-    roles = db.Column(postgresql.ARRAY(db.String(32)))
+    roles = db.Column(postgresql.ARRAY(db.Enum(Role)))
     surnames = db.Column(db.String(32))
     created_at = db.Column(db.DateTime)
     updated_at = db.Column(db.DateTime)
