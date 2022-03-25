@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import and_
 from app.api.errors import (
     BadRequestError,
     DuplicateAdminSignupError,
-    InternalServerError
+    InternalServerError,
 )
 
 from app.api.auth0 import requires_auth
@@ -20,20 +20,17 @@ class AccountListApi(Resource):
     """
     This endpoint will always be called after a user logs on to the VMS through Auth0.
     """
+
     @requires_auth
     def post(self) -> Response:
 
-        response_obj = {
-            'data': None,
-            'error': None,
-            'success': False
-        }
+        response_obj = {"data": None, "error": None, "success": False}
 
         try:
             req_data = request.get_json()
 
             # First check if an account exists for that email address.
-            account = Account.query.filter_by(email=req_data.get('email')).first()
+            account = Account.query.filter_by(email=req_data.get("email")).first()
 
             # New user signup.
             if account is None:
@@ -42,15 +39,12 @@ class AccountListApi(Resource):
                 1) Has an email address from the same company (based on the email domain)
                 2) Has an admin role (vendor admin or consumer admin)
                 """
-                email_domain = req_data.get('email').split('@')[1]
+                email_domain = req_data.get("email").split("@")[1]
 
                 admin_account = Account.query.filter(
                     and_(
                         Account.email.contains(email_domain),
-                        Account.roles.overlap([
-                            Role._VND_ADM,
-                            Role._CNS_ADM
-                        ])
+                        Account.roles.overlap([Role._VND_ADM, Role._CNS_ADM]),
                     )
                 ).first()
 
@@ -61,11 +55,11 @@ class AccountListApi(Resource):
                     account.save()
 
                 else:
-                    _ = delete_user_from_auth0.apply_async(args=[req_data.get('email')])
+                    _ = delete_user_from_auth0.apply_async(args=[req_data.get("email")])
                     raise DuplicateAdminSignupError
 
-            response_obj['data'] = account_schema.dump(account)
-            response_obj['success'] = True
+            response_obj["data"] = account_schema.dump(account)
+            response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
 
@@ -79,23 +73,18 @@ class AccountListApi(Resource):
 
 
 class AccountApi(Resource):
-
     @requires_auth
     def put(self, account_id) -> Response:
 
-        response_obj = {
-            'data': None,
-            'error': None,
-            'success': False
-        }
+        response_obj = {"data": None, "error": None, "success": False}
 
         try:
             req_data = request.get_json()
             update_data = account_schema.load(data=req_data, partial=True)
             account = Account.get_by_id(account_id)
             account.update(update_data)
-            response_obj['data'] = account_schema.dump(account)
-            response_obj['success'] = True
+            response_obj["data"] = account_schema.dump(account)
+            response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
 

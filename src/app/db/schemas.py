@@ -7,7 +7,7 @@ from .models import AccountType, EmployeeCountRange, YearlyRevenueRange, Role
 
 class AccountSchema(ma.Schema):
     account_type = EnumField(AccountType, by_value=True)
-    company_profile = fields.Nested('CompanyProfileSchema')
+    company_profile = fields.Nested("CompanyProfileSchema")
     department = fields.Str()
     email = fields.Str()
     given_names = fields.Str()
@@ -24,7 +24,7 @@ accounts_schema = AccountSchema(many=True)
 
 
 class CompanyProfileSchema(ma.Schema):
-    accounts = fields.Nested('AccountSchema')
+    accounts = fields.Nested("AccountSchema")
     address_line_1 = fields.Str()
     address_line_2 = fields.Str()
     address_line_3 = fields.Str()

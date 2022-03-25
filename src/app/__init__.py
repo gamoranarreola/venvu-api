@@ -12,14 +12,16 @@ from config import Config
 from app.api.errors import errors
 from app.db import db, init_marshmallow
 
-if os.environ.get('CONFIG_SETUP') == 'development':
+if os.environ.get("CONFIG_SETUP") == "development":
     from config import DevelopmentConfig as UseConfig
-elif os.environ.get('CONFIG_SETUP') == 'testing':
+elif os.environ.get("CONFIG_SETUP") == "testing":
     from config import TestingConfig as UseConfig
 
 mail = Mail()
 migrate = Migrate()
-celery = Celery(__name__, broker=Config.CELERY_BROKER_URL, result_backend=Config.RESULT_BACKEND)
+celery = Celery(
+    __name__, broker=Config.CELERY_BROKER_URL, result_backend=Config.RESULT_BACKEND
+)
 
 from app.api.routes import create_routes
 
@@ -29,14 +31,14 @@ def create_app():
     flask_app.config.from_object(UseConfig)
     celery.conf.update(flask_app.config)
 
-    CORS(flask_app, resources={
-        r'/api/*': {
-            'origins': [
-                'http://localhost:4200',
-                'https://vms-22-fe.herokuapp.com'
-            ]
-        }
-    })
+    CORS(
+        flask_app,
+        resources={
+            r"/api/*": {
+                "origins": ["http://localhost:4200", "https://vms-22-fe.herokuapp.com"]
+            }
+        },
+    )
 
     init_extensions(flask_app)
     create_routes(api=Api(app=flask_app, errors=errors))

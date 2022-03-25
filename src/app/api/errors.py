@@ -26,28 +26,13 @@ class BadRequestError(HTTPException):
 
 
 errors = {
-    'BadRequestError': {
-        'message': 'Bad request',
-        'status': 400
+    "BadRequestError": {"message": "Bad request", "status": 400},
+    "InternalServerError": {"message": "Internal server error", "status": 500},
+    "InvalidQueryError": {"message": "", "status": 500},
+    "UnauthorizedError": {"message": "Unauthorized", "status": 401},
+    "DuplicateAdminSignupError": {
+        "message": "An admin account already exists for your organization.",
+        "status": 409,
     },
-    'InternalServerError': {
-        'message': 'Internal server error',
-        'status': 500
-    },
-    'InvalidQueryError': {
-        'message': '',
-        'status': 500
-    },
-    'UnauthorizedError': {
-        'message': 'Unauthorized',
-        'status': 401
-    },
-    'DuplicateAdminSignupError': {
-        'message': 'An admin account already exists for your organization.',
-        'status': 409
-    },
-    'DuplicateResourceError': {
-        'message': 'Duplicate resource',
-        'status': 409
-    }
+    "DuplicateResourceError": {"message": "Duplicate resource", "status": 409},
 }

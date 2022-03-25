@@ -13,14 +13,14 @@ from app.api.errors import UnauthorizedError
 
 
 def get_token_auth_header():
-    auth = request.headers.get('Authorization', None)
+    auth = request.headers.get("Authorization", None)
 
     if not auth:
         raise UnauthorizedError
 
     parts = auth.split()
 
-    if parts[0] != 'Bearer' or len(parts) != 2:
+    if parts[0] != "Bearer" or len(parts) != 2:
         raise UnauthorizedError
 
     token = parts[1]
@@ -33,19 +33,20 @@ def requires_auth(f):
     def decorated(*args, **kwargs):
         token = get_token_auth_header()
         jsonurl = six.moves.urllib.request.urlopen(
-            'https://' + os.environ.get('AUTH0_DOMAIN') + '/.well-known/jwks.json')
+            "https://" + os.environ.get("AUTH0_DOMAIN") + "/.well-known/jwks.json"
+        )
         jwks = json.loads(jsonurl.read())
         unverified_header = jwt.get_unverified_header(token)
         rsa_key = {}
 
-        for key in jwks['keys']:
-            if key['kid'] == unverified_header['kid']:
+        for key in jwks["keys"]:
+            if key["kid"] == unverified_header["kid"]:
                 rsa_key = {
-                    'kty': key['kty'],
-                    'kid': key['kid'],
-                    'use': key['use'],
-                    'n': key['n'],
-                    'e': key['e']
+                    "kty": key["kty"],
+                    "kid": key["kid"],
+                    "use": key["use"],
+                    "n": key["n"],
+                    "e": key["e"],
                 }
 
         if rsa_key:
@@ -53,9 +54,9 @@ def requires_auth(f):
                 payload = jwt.decode(
                     token,
                     rsa_key,
-                    algorithms=['RS256'],
-                    audience=os.environ.get('API_AUDIENCE'),
-                    issuer='https://' + os.environ.get('AUTH0_DOMAIN') + '/'
+                    algorithms=["RS256"],
+                    audience=os.environ.get("API_AUDIENCE"),
+                    issuer="https://" + os.environ.get("AUTH0_DOMAIN") + "/",
                 )
             except Exception:
                 raise UnauthorizedError
@@ -71,12 +72,12 @@ def requires_auth(f):
 
 class Auth0:
     vms_api_app = {
-        'client_id': 'nl7qE0EZL2d0mBc7NAsnwhqarhEsTnTA',
-        'client_secret': 'p2H_Z4w5LAJDcxH4CzEe0ewvt6COHCRf6WbJsyVN5PVvRttUnMo2coa_ElCVgUj8'
+        "client_id": "nl7qE0EZL2d0mBc7NAsnwhqarhEsTnTA",
+        "client_secret": "p2H_Z4w5LAJDcxH4CzEe0ewvt6COHCRf6WbJsyVN5PVvRttUnMo2coa_ElCVgUj8",
     }
 
     auth0_system_api = {
-        'identifier': 'https://' + os.environ.get('AUTH0_DOMAIN') + '/api/v2/'
+        "identifier": "https://" + os.environ.get("AUTH0_DOMAIN") + "/api/v2/"
     }
 
     last_vms_admin_user_id = None
@@ -90,100 +91,91 @@ class Auth0:
     @staticmethod
     def auth0_get_mgmt_api_token():
 
-        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+        conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 
         data = {
-            'client_id': Auth0.vms_api_app.get('client_id'),
-            'client_secret': Auth0.vms_api_app.get('client_secret'),
-            'audience': Auth0.auth0_system_api.get('identifier'),
-            'grant_type': "client_credentials"
+            "client_id": Auth0.vms_api_app.get("client_id"),
+            "client_secret": Auth0.vms_api_app.get("client_secret"),
+            "audience": Auth0.auth0_system_api.get("identifier"),
+            "grant_type": "client_credentials",
         }
 
         conn.request(
-            'POST',
-            '/oauth/token',
+            "POST",
+            "/oauth/token",
             json.dumps(data),
-            headers={'content-type': 'application/json'}
+            headers={"content-type": "application/json"},
         )
 
-        return json.loads(conn.getresponse().read()).get('access_token')
+        return json.loads(conn.getresponse().read()).get("access_token")
 
     @staticmethod
     def auth0_create_user(email, password, is_admin=False):
-        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+        conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 
         data = {
-            'email': email,
-            'connection': 'Username-Password-Authentication',
-            'password': password
+            "email": email,
+            "connection": "Username-Password-Authentication",
+            "password": password,
         }
 
         conn.request(
-            'POST',
-            '/api/v2/users',
-            json.dumps(data),
-            headers=Auth0.get_headers()
+            "POST", "/api/v2/users", json.dumps(data), headers=Auth0.get_headers()
         )
 
         user = json.loads(conn.getresponse().read())
-        print('\n\nauth0_create_user: ' + str(user))
+        print("\n\nauth0_create_user: " + str(user))
 
         if is_admin:
-            Auth0.last_vms_admin_user_id = user.get('user_id')
+            Auth0.last_vms_admin_user_id = user.get("user_id")
         else:
-            Auth0.last_vms_user_id = user.get('user_id')
+            Auth0.last_vms_user_id = user.get("user_id")
 
         return user
 
     @staticmethod
     def auth0_assign_role(user_id, role_id):
-        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+        conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 
-        data = {
-            'roles': [
-                role_id
-            ]
-        }
+        data = {"roles": [role_id]}
 
         conn.request(
-            'POST',
-            '/api/v2/users/' + pathname2url(user_id) + '/roles',
+            "POST",
+            "/api/v2/users/" + pathname2url(user_id) + "/roles",
             json.dumps(data),
-            headers=Auth0.get_headers()
+            headers=Auth0.get_headers(),
         )
 
-        print('\n\n/api/v2/users/' + pathname2url(user_id) + '/roles')
-        print('\n\nauth0_assign_role: ' + user_id + ' ' + role_id)
+        print("\n\n/api/v2/users/" + pathname2url(user_id) + "/roles")
+        print("\n\nauth0_assign_role: " + user_id + " " + role_id)
         return conn.getresponse().read()
 
     @staticmethod
     def auth0_get_user_by_email(email):
-        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+        conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 
         conn.request(
-            'GET',
-            '/api/v2/users-by-email?' + urlencode({'email': email}),
-            headers=Auth0.get_headers()
+            "GET",
+            "/api/v2/users-by-email?" + urlencode({"email": email}),
+            headers=Auth0.get_headers(),
         )
 
         return json.loads(conn.getresponse().read())
 
     @staticmethod
     def auth0_delete_user(id):
-        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+        conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 
         conn.request(
-            'DELETE',
-            '/api/v2/users/' + pathname2url(id),
-            headers=Auth0.get_headers()
+            "DELETE", "/api/v2/users/" + pathname2url(id), headers=Auth0.get_headers()
         )
-        print('\n\nauth0_delete_user: ' + id)
+        print("\n\nauth0_delete_user: " + id)
         return conn.getresponse().read()
 
     @staticmethod
     def get_headers():
 
         return {
-            'authorization': 'Bearer ' + Auth0.auth0_get_mgmt_api_token(),
-            'content-type': 'application/json'
+            "authorization": "Bearer " + Auth0.auth0_get_mgmt_api_token(),
+            "content-type": "application/json",
         }

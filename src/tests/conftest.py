@@ -12,7 +12,7 @@ from app.db.models import (
     CompanyProfile,
     EmployeeCountRange,
     Role,
-    YearlyRevenueRange
+    YearlyRevenueRange,
 )
 
 
@@ -20,6 +20,7 @@ from app.db.models import (
 def create_account():
     def _create_account(account_data):
         return Account(**account_data)
+
     return _create_account
 
 
@@ -27,32 +28,32 @@ def create_account():
 def create_company_profile():
 
     return CompanyProfile(
-        address_line_1='1000 Corellian Way',
-        city='Corelliopolis',
-        country='Corellia',
-        description='We build ships',
+        address_line_1="1000 Corellian Way",
+        city="Corelliopolis",
+        country="Corellia",
+        description="We build ships",
         employee_count_range=EmployeeCountRange._1000PLUS,
-        state_tax_id='12-345',
-        tax_id_state='CO',
-        name='Corellian Industries',
-        postal_code='99999',
-        state_province='CO',
-        website='corellianindustries.com',
-        yearly_revenue_range=YearlyRevenueRange._1BPLUS
+        state_tax_id="12-345",
+        tax_id_state="CO",
+        name="Corellian Industries",
+        postal_code="99999",
+        state_province="CO",
+        website="corellianindustries.com",
+        yearly_revenue_range=YearlyRevenueRange._1BPLUS,
     )
 
 
 @pytest.fixture
 def add_admin(create_account, create_company_profile):
-    email = 'vms_admin@bcdev.works'
-    auth0_admin_user = Auth0.auth0_create_user(email, 's8dKU7Sp9o', True)
-    Auth0.auth0_assign_role(auth0_admin_user.get('user_id'), 'rol_mOHJ7dARVN420281')
+    email = "vms_admin@bcdev.works"
+    auth0_admin_user = Auth0.auth0_create_user(email, "s8dKU7Sp9o", True)
+    Auth0.auth0_assign_role(auth0_admin_user.get("user_id"), "rol_mOHJ7dARVN420281")
 
     account = create_account(
         {
-            'email': email,
-            'sub': auth0_admin_user.get('user_id'),
-            'roles': [Role['_VND_ADM']]
+            "email": email,
+            "sub": auth0_admin_user.get("user_id"),
+            "roles": [Role["_VND_ADM"]],
         }
     )
 
@@ -65,15 +66,15 @@ def add_admin(create_account, create_company_profile):
 
 @pytest.fixture
 def add_admin_no_company_profile(create_account):
-    email = 'vms_admin@bcdev.works'
-    auth0_admin_user = Auth0.auth0_create_user(email, 's8dKU7Sp9o', True)
-    Auth0.auth0_assign_role(auth0_admin_user.get('user_id'), 'rol_mOHJ7dARVN420281')
+    email = "vms_admin@bcdev.works"
+    auth0_admin_user = Auth0.auth0_create_user(email, "s8dKU7Sp9o", True)
+    Auth0.auth0_assign_role(auth0_admin_user.get("user_id"), "rol_mOHJ7dARVN420281")
 
     account = create_account(
         {
-            'email': email,
-            'sub': auth0_admin_user.get('user_id'),
-            'roles': [Role['_VND_ADM']]
+            "email": email,
+            "sub": auth0_admin_user.get("user_id"),
+            "roles": [Role["_VND_ADM"]],
         }
     )
 
@@ -100,26 +101,27 @@ def app():
 @pytest.fixture
 def get_vms_api_auth_token():
     def _get_vms_api_auth_token():
-        conn = http.client.HTTPSConnection(os.environ.get('AUTH0_DOMAIN'))
+        conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 
         data = {
-            'client_id': Auth0.vms_api_app.get('client_id'),
-            'client_secret': Auth0.vms_api_app.get('client_secret'),
-            'audience': os.environ.get('API_AUDIENCE'),
-            'grant_type': 'client_credentials'
+            "client_id": Auth0.vms_api_app.get("client_id"),
+            "client_secret": Auth0.vms_api_app.get("client_secret"),
+            "audience": os.environ.get("API_AUDIENCE"),
+            "grant_type": "client_credentials",
         }
 
         conn.request(
-            'POST',
-            '/oauth/token',
+            "POST",
+            "/oauth/token",
             json.dumps(data),
-            { 'content-type': 'application/json' }
+            {"content-type": "application/json"},
         )
 
-        return 'Bearer ' + json.loads(conn.getresponse().read()).get('access_token')
+        return "Bearer " + json.loads(conn.getresponse().read()).get("access_token")
+
     return _get_vms_api_auth_token
 
 
 @pytest.fixture
 def auth0_api_create_user():
-    return Auth0.auth0_create_user('vms_user@bcdev.works', 'D$s8dKU7Sp9o')
+    return Auth0.auth0_create_user("vms_user@bcdev.works", "D$s8dKU7Sp9o")

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 1f87579f0fde
+Revision ID: 21380c235e7b
 Revises: 
-Create Date: 2022-03-10 22:12:28.969538
+Create Date: 2022-03-20 16:17:45.158820
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '1f87579f0fde'
+revision = '21380c235e7b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -43,7 +43,7 @@ def upgrade():
     sa.Column('yearly_revenue_range', sa.Enum('_U500K', '_500K_TO_999K', '_1M_TO_U2P5M', '_2P5M_TO_U5M', '_5M_TO_U10M', '_10M_TO_U100M', '_100M_TO_U500M', '_500M_TO_U1B', '_1BPLUS', name='yearlyrevenuerange'), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name'),
-    sa.UniqueConstraint('state_tax_id'),
+    sa.UniqueConstraint('state_tax_id', 'tax_id_state', name='unique_state_tax_id'),
     sa.UniqueConstraint('website')
     )
     op.create_table('account',
