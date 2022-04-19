@@ -1,46 +1,94 @@
 from datetime import datetime
-from enum import Enum
+from enum import Enum, IntEnum, unique
 from sqlalchemy.dialects import postgresql
 
 from app.db import db
 
 
 class AccountType(Enum):
-    _CNS = "CNS"
-    _VND = "VND"
+    _CNS = "Consumer"
+    _VND = "Vendor"
 
 
 class Role(Enum):
-    _VND_ADM = "VND_ADM"
-    _VND_REP = "VND_REP"
-    _VND_PUB = "VND_PUB"
-    _CNS_ADM = "CNS_ADM"
-    _CNS_REP = "CNS_REP"
-    _CNS_PUB = "CNS_PUB"
+    _VND_ADM = "Vendor Admin"
+    _VND_REP = "Vendor Rep"
+    _VND_PUB = "Vendor Publisher"
+    _CNS_ADM = "Consumer Admin"
+    _CNS_REP = "Consumer Rep"
+    _CNS_PUB = "Consumer Publisher"
 
 
 class EmployeeCountRange(Enum):
-    _1_TO_4 = "1_TO_4"
-    _5_TO_9 = "5_TO_9"
-    _10_TO_19 = "10_TO_19"
-    _20_TO_49 = "20_TO_49"
-    _50_TO_99 = "50_TO_99"
-    _100_TO_249 = "100_TO_249"
-    _250_TO_499 = "250_TO_499"
-    _500_TO_999 = "500_TO_999"
-    _1000PLUS = "1000PLUS"
+    _1_TO_4 = "1 to 4"
+    _5_TO_9 = "5 to 9"
+    _10_TO_19 = "10 to 19"
+    _20_TO_49 = "20 to 49"
+    _50_TO_99 = "50 to 99"
+    _100_TO_249 = "100 to 249"
+    _250_TO_499 = "250 to 499"
+    _500_TO_999 = "500 to 999"
+    _1000PLUS = "1000 or more"
 
 
 class YearlyRevenueRange(Enum):
-    _U500K = "U500K"
-    _500K_TO_999K = "500K_TO_999K"
-    _1M_TO_U2P5M = "1M_TO_U2P5M"
-    _2P5M_TO_U5M = "2P5M_TO_U5M"
-    _5M_TO_U10M = "5M_TO_U10M"
-    _10M_TO_U100M = "10M_TO_U100M"
-    _100M_TO_U500M = "100M_TO_U500M"
-    _500M_TO_U1B = "500M_TO_U1B"
-    _1BPLUS = "1BPLUS"
+    _U500K = "Under $500K"
+    _500K_TO_999K = "$500K to $999K"
+    _1M_TO_U2P5M = "$1M to under $2.5M"
+    _2P5M_TO_U5M = "$2.5M to under $5M"
+    _5M_TO_U10M = "$5M to under $10M"
+    _10M_TO_U100M = "$10M to under $100M"
+    _100M_TO_U500M = "$100M to under $500M"
+    _500M_TO_U1B = "$500M to under $1B"
+    _1BPLUS = "$1B or more"
+
+
+class CompanyType(Enum):
+    _PUB = "Public Company"
+    _PRV = "Privately Held"
+    _PRT = "Partnership"
+    _SLF = "Self Employed"
+    _GOV = "Government Agency"
+    _NPR = "Non-Profit"
+    _SLP = "Sole Proprietorship"
+
+
+class Industry(db.Model):
+    __tablename__ = "industry"
+
+    created_at = db.Column(db.DateTime)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True)
+    updated_at = db.Column(db.DateTime)
+
+    def __init__(self, name):
+        self.created_at = datetime.utcnow()
+        self.name = name
+        self.updated_at = datetime.utcnow()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def update(self, data):
+        for key, item in data.items():
+            setattr(self, key, item)
+        self.updated_at = datetime.utcnow()
+        db.session.commit()
+
+    @staticmethod
+    def get_all():
+        return Industry.query.all()
+
+    def get_by_id(id):
+        return Industry.query.get(id)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def __repr__(self) -> str:
+        return super().__repr__()
 
 
 class CompanyProfile(db.Model):
@@ -59,11 +107,14 @@ class CompanyProfile(db.Model):
     address_line_2 = db.Column(db.String(32))
     address_line_3 = db.Column(db.String(32))
     city = db.Column(db.String(32))
+    company_type = db.Column(db.Enum(CompanyType))
     country = db.Column(db.String(32))
     created_at = db.Column(db.DateTime)
-    description = db.Column(db.String(512))
+    description = db.Column(db.String(2048))
     employee_count_range = db.Column(db.Enum(EmployeeCountRange))
+    founded = db.Column(db.Integer)
     id = db.Column(db.Integer, primary_key=True)
+    industry = db.Column(db.Integer)
     is_active = db.Column(db.Boolean, default=False)
     is_tax_id_verified = db.Column(db.Boolean, default=False)
     key_products = db.Column(postgresql.ARRAY(db.String(32)))
@@ -85,9 +136,12 @@ class CompanyProfile(db.Model):
         tax_id_state,
         address_line_1=None,
         city=None,
+        company_type=None,
         country=None,
         description=None,
         employee_count_range=None,
+        founded=None,
+        industry=None,
         postal_code=None,
         state_province=None,
         website=None,
@@ -104,10 +158,13 @@ class CompanyProfile(db.Model):
         self.address_line_2 = address_line_2
         self.address_line_3 = address_line_3
         self.city = city
+        self.company_type = company_type
         self.country = country
         self.created_at = datetime.utcnow()
         self.description = description
         self.employee_count_range = employee_count_range
+        self.founded = founded
+        self.industry = industry
         self.state_tax_id = state_tax_id
         self.tax_id_state = tax_id_state
         self.is_active = is_active

@@ -50,3 +50,12 @@ class CompanyProfileSchema(ma.Schema):
 
 company_profile_schema = CompanyProfileSchema()
 company_profiles_schema = CompanyProfileSchema(many=True)
+
+
+class IndustrySchema(ma.Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+
+
+industry_schema = IndustrySchema()
+industries_schema = IndustrySchema(many=True)

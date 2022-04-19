@@ -16,4 +16,9 @@ Celery (must run ```pipenv shell``` from project root first)
 celery -A celery_worker.celery worker --loglevel=info
 ```
 
-# Flask Migrations
+# Flask Migrations on Heroku
+First, run a bash shell in Heroku.
+```
+heroku run bash
+```
+
