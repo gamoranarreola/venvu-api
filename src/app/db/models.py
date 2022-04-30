@@ -1,5 +1,5 @@
 from datetime import datetime
-from enum import Enum, IntEnum, unique
+from enum import Enum
 from sqlalchemy.dialects import postgresql
 
 from app.db import db
@@ -134,25 +134,25 @@ class CompanyProfile(db.Model):
         name,
         state_tax_id,
         tax_id_state,
-        address_line_1=None,
-        city=None,
-        company_type=None,
-        country=None,
-        description=None,
-        employee_count_range=None,
+        address_line_1='',
+        address_line_2='',
+        address_line_3='',
+        city='',
+        company_type='',
+        country='',
+        description='',
+        employee_count_range='',
         founded=None,
         industry=None,
-        postal_code=None,
-        state_province=None,
-        website=None,
-        yearly_revenue_range=None,
-        address_line_2=None,
-        address_line_3=None,
         is_active=False,
         is_tax_id_verified=False,
         key_products=[],
         key_services=[],
-        parent_company=None,
+        parent_company='',
+        postal_code='',
+        state_province='',
+        website='',
+        yearly_revenue_range='',
     ):
         self.address_line_1 = address_line_1
         self.address_line_2 = address_line_2

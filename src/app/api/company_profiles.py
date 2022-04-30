@@ -109,7 +109,7 @@ class CompanyProfileListApi(Resource):
 class CompanyProfileApi(Resource):
 
     @requires_auth
-    def put(self, company_profile_id) -> Response:
+    def patch(self, company_profile_id) -> Response:
 
         response_obj = {"data": None, "error": None, "success": False}
 
