@@ -2,7 +2,7 @@ from marshmallow_enum import EnumField
 from marshmallow import fields
 
 from app.db import ma
-from .models import AccountType, EmployeeCountRange, YearlyRevenueRange, Role
+from .models import AccountType, CompanyType, EmployeeCountRange, YearlyRevenueRange, Role
 
 
 class AccountSchema(ma.Schema):
@@ -29,7 +29,7 @@ class CompanyProfileSchema(ma.Schema):
     address_line_2 = fields.Str()
     address_line_3 = fields.Str()
     city = fields.Str()
-    company_type = fields.Str()
+    company_type = EnumField(CompanyType)
     country = fields.Str()
     description = fields.Str()
     employee_count_range = EnumField(EmployeeCountRange)

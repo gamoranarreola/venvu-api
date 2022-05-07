@@ -194,7 +194,7 @@ class CompanyProfile(db.Model):
         return CompanyProfile.query.all()
 
     def get_by_id(id):
-        return Account.query.get(id)
+        return CompanyProfile.query.get(id)
 
     def delete(self):
         db.session.delete(self)
