@@ -35,7 +35,7 @@ def create_app():
         flask_app,
         resources={
             r"/api/*": {
-                "origins": ["http://localhost:4200", "https://vms-22-fe.herokuapp.com"]
+                "origins": ["http://localhost:4200", "https://venvu-client.herokuapp.com"]
             }
         },
     )
