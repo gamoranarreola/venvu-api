@@ -43,5 +43,5 @@ class TestingConfig(Config):
     WTF_CSRF_ENABLED = False
     MAIL_SUPPRESS_SEND = True
     SQLALCHEMY_DATABASE_URI = (
-        "postgresql://vms_db_test:vms_db_test@localhost:5432/vms_db_test"
+        "postgresql://venvu_db_test:venvu_db_test@localhost:5432/venvu_db_test"
     )

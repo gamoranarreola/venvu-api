@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+from sqlalchemy import null
 from sqlalchemy.dialects import postgresql
 
 from app.db import db
@@ -107,11 +108,11 @@ class CompanyProfile(db.Model):
     address_line_2 = db.Column(db.String(32))
     address_line_3 = db.Column(db.String(32))
     city = db.Column(db.String(32))
-    company_type = db.Column(db.Enum(CompanyType))
+    company_type = db.Column(db.Enum(CompanyType), nullable=True)
     country = db.Column(db.String(32))
     created_at = db.Column(db.DateTime)
     description = db.Column(db.String(2048))
-    employee_count_range = db.Column(db.Enum(EmployeeCountRange))
+    employee_count_range = db.Column(db.Enum(EmployeeCountRange), nullable=True)
     founded = db.Column(db.Integer)
     id = db.Column(db.Integer, primary_key=True)
     industry = db.Column(db.Integer)
@@ -127,7 +128,7 @@ class CompanyProfile(db.Model):
     tax_id_state = db.Column(db.String(2))
     updated_at = db.Column(db.DateTime)
     website = db.Column(db.String(64), unique=True)
-    yearly_revenue_range = db.Column(db.Enum(YearlyRevenueRange))
+    yearly_revenue_range = db.Column(db.Enum(YearlyRevenueRange), nullable=True)
 
     def __init__(
         self,
@@ -138,10 +139,10 @@ class CompanyProfile(db.Model):
         address_line_2='',
         address_line_3='',
         city='',
-        company_type='',
+        company_type=None,
         country='',
         description='',
-        employee_count_range='',
+        employee_count_range=None,
         founded=None,
         industry=None,
         is_active=False,
@@ -152,7 +153,7 @@ class CompanyProfile(db.Model):
         postal_code='',
         state_province='',
         website='',
-        yearly_revenue_range='',
+        yearly_revenue_range=None,
     ):
         self.address_line_1 = address_line_1
         self.address_line_2 = address_line_2
