@@ -83,14 +83,13 @@ class Auth0:
     last_vms_admin_user_id = None
     last_vms_user_id = None
 
-    """
-    Retrieves an auth token for the Auth0 Management API. The requestor
-    is the VMS API App.
-    """
 
     @staticmethod
     def auth0_get_mgmt_api_token():
-
+        """
+        Retrieves an auth token for the Auth0 Management API. The requestor
+        is the VMS API App.
+        """
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 
         data = {
@@ -108,6 +107,7 @@ class Auth0:
         )
 
         return json.loads(conn.getresponse().read()).get("access_token")
+
 
     @staticmethod
     def auth0_create_user(email, password, is_admin=False):
@@ -133,11 +133,20 @@ class Auth0:
 
         return user
 
+
     @staticmethod
-    def auth0_assign_role(user_id, role_id):
+    def auth0_assign_user_roles(user_id, role_names):
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 
-        data = {"roles": [role_id]}
+        all_roles = Auth0.auth0_get_roles()
+        role_ids = []
+
+        for name in role_names:
+            for role in all_roles:
+                if role['name'] == name:
+                    role_ids.append(role['id'])
+
+        data = {"roles": role_ids}
 
         conn.request(
             "POST",
@@ -147,8 +156,22 @@ class Auth0:
         )
 
         print("\n\n/api/v2/users/" + pathname2url(user_id) + "/roles")
-        print("\n\nauth0_assign_role: " + user_id + " " + role_id)
+        print("\n\nauth0_assign_user_roles: " + user_id + ''.join(str(role) for role in role_names))
         return conn.getresponse().read()
+
+
+    @staticmethod
+    def auth0_get_roles():
+        conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
+
+        conn.request(
+            "GET",
+            "/api/v2/roles",
+            headers=Auth0.get_headers(),
+        )
+
+        return json.loads(conn.getresponse().read())
+
 
     @staticmethod
     def auth0_get_user_by_email(email):
@@ -162,6 +185,7 @@ class Auth0:
 
         return json.loads(conn.getresponse().read())
 
+
     @staticmethod
     def auth0_delete_user(id):
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
@@ -171,6 +195,7 @@ class Auth0:
         )
         print("\n\nauth0_delete_user: " + id)
         return conn.getresponse().read()
+
 
     @staticmethod
     def get_headers():

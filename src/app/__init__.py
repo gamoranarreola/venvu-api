@@ -19,6 +19,7 @@ elif os.environ.get("CONFIG_SETUP") == "testing":
 
 mail = Mail()
 migrate = Migrate()
+
 celery = Celery(
     __name__, broker=Config.CELERY_BROKER_URL, result_backend=Config.RESULT_BACKEND
 )

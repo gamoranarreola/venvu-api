@@ -14,7 +14,7 @@ def test_create_company_profile(
             json={
                 "email": "vms_admin@bcdev.works",
                 "account": {
-                    "account_type": AccountType._CNS.value,
+                    "account_type": AccountType._CNS.name,
                     "given_names": "Guillermo Alberto",
                     "surnames": "Moran-Arreola",
                     "department": "IT",

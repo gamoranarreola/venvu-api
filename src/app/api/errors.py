@@ -25,6 +25,10 @@ class BadRequestError(HTTPException):
     pass
 
 
+class Auth0RequestError(HTTPException):
+    pass
+
+
 errors = {
     "BadRequestError": {"message": "Bad request", "status": 400},
     "InternalServerError": {"message": "Internal server error", "status": 500},
@@ -35,4 +39,8 @@ errors = {
         "status": 409,
     },
     "DuplicateResourceError": {"message": "Duplicate resource", "status": 409},
+    "Auth0RequestError": {
+        "message": "An error occurred while communicating with Auth0.",
+        "status": 500
+    }
 }

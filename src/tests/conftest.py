@@ -47,7 +47,7 @@ def create_company_profile():
 def add_admin(create_account, create_company_profile):
     email = "vms_admin@bcdev.works"
     auth0_admin_user = Auth0.auth0_create_user(email, "s8dKU7Sp9o", True)
-    Auth0.auth0_assign_role(auth0_admin_user.get("user_id"), "rol_mOHJ7dARVN420281")
+    Auth0.auth0_assign_user_roles(auth0_admin_user.get("user_id"), "rol_mOHJ7dARVN420281")
 
     account = create_account(
         {
@@ -68,7 +68,7 @@ def add_admin(create_account, create_company_profile):
 def add_admin_no_company_profile(create_account):
     email = "vms_admin@bcdev.works"
     auth0_admin_user = Auth0.auth0_create_user(email, "s8dKU7Sp9o", True)
-    Auth0.auth0_assign_role(auth0_admin_user.get("user_id"), "rol_mOHJ7dARVN420281")
+    Auth0.auth0_assign_user_roles(auth0_admin_user.get("user_id"), "rol_mOHJ7dARVN420281")
 
     account = create_account(
         {

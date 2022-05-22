@@ -5,10 +5,11 @@ from flask.wrappers import Response
 from sqlalchemy.sql.expression import and_, or_
 import pycountry
 
-from app.api.errors import BadRequestError, InternalServerError
+from app.api.errors import BadRequestError, InternalServerError, Auth0RequestError
 from app.api.auth0 import requires_auth
 from app.db.models import Account, CompanyProfile, EmployeeCountRange, Industry, Role, AccountType, CompanyType, YearlyRevenueRange
 from app.db.schemas import company_profile_schema, account_schema, industries_schema
+from app.tasks import assign_user_roles
 
 
 class CompanyProfileListApi(Resource):
@@ -70,14 +71,27 @@ class CompanyProfileListApi(Resource):
                     company_profile.save()
 
                     account_data = {**req_data.get("account")}
+
                     account_data["account_type"] = AccountType[
                         account_data["account_type"]
                     ]
 
                     if account_data["account_type"] == AccountType._CNS:
                         account_data["roles"] = [Role._CNS_ADM]
+                        _ = assign_user_roles.apply_async(args=[account.sub, [Role._CNS_ADM.value]])
+
+                        try:
+                            _.wait()
+                        except Auth0RequestError:
+                            raise Auth0RequestError
                     elif account_data["account_type"] == AccountType._VND:
                         account_data["roles"] = [Role._VND_ADM]
+                        _ = assign_user_roles.apply_async(args=[account.sub, [Role._VND_ADM.value]])
+
+                        try:
+                            _.wait()
+                        except Auth0RequestError:
+                            raise Auth0RequestError
 
                     account.update(account_schema.load(data=account_data, partial=True))
 
@@ -89,9 +103,11 @@ class CompanyProfileListApi(Resource):
 
                     response_obj["data"] = {}
                     response_obj["success"] = False
+
                     response_obj[
                         "error"
                     ] = "The company name and website must be unique as well as the tax ID within the provided state."
+
                     status_code = 400
 
             response = jsonify(response_obj)

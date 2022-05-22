@@ -49,11 +49,8 @@ class AccountListApi(Resource):
                 ).first()
 
                 if admin_account is None:
-                    # Create the account and assign both types of admin roles temporarily
                     account = Account(**req_data)
-                    account.roles = [Role._VND_ADM, Role._CNS_ADM]
                     account.save()
-
                 else:
                     _ = delete_user_from_auth0.apply_async(args=[req_data.get("email")])
                     raise DuplicateAdminSignupError
