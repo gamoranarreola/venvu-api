@@ -8,7 +8,7 @@ import pycountry
 from app.api.errors import BadRequestError, InternalServerError, Auth0RequestError
 from app.api.auth0 import requires_auth
 from app.db.models import Account, CompanyProfile, EmployeeCountRange, Industry, Role, AccountType, CompanyType, YearlyRevenueRange
-from app.db.schemas import company_profile_schema, account_schema, industries_schema
+from app.db.schemas import company_profile_schema, account_schema, industries_schema, industry_schema
 from app.tasks import assign_user_roles
 
 
@@ -167,6 +167,25 @@ class CompanyTypeListApi(Resource):
             raise InternalServerError
 
 
+class CompanyTypeApi(Resource):
+
+    @requires_auth
+    def get(self, company_type_name) -> Response:
+
+        response_obj = {"data": None, "error": None, "success": False}
+
+        try:
+            response_obj["data"] = CompanyType[company_type_name].value
+            response_obj["success"] = True
+            response = jsonify(response_obj)
+            response.status_code = 200
+
+            return response
+
+        except InternalServerError:
+            raise InternalServerError
+
+
 class EmployeeCountRangeListApi(Resource):
 
     @requires_auth
@@ -186,6 +205,25 @@ class EmployeeCountRangeListApi(Resource):
             raise InternalServerError
 
 
+class EmployeeCountRangeApi(Resource):
+
+    @requires_auth
+    def get(self, employee_count_range_name) -> Response:
+
+        response_obj = {"data": None, "error": None, "success": False}
+
+        try:
+            response_obj["data"] = EmployeeCountRange[employee_count_range_name].value
+            response_obj["success"] = True
+            response = jsonify(response_obj)
+            response.status_code = 200
+
+            return response
+
+        except InternalServerError:
+            raise InternalServerError
+
+
 class YearlyRevenueRangeListApi(Resource):
 
     @requires_auth
@@ -195,6 +233,25 @@ class YearlyRevenueRangeListApi(Resource):
 
         try:
             response_obj["data"] = [{"code": d.name, "name": d.value} for d in YearlyRevenueRange]
+            response_obj["success"] = True
+            response = jsonify(response_obj)
+            response.status_code = 200
+
+            return response
+
+        except InternalServerError:
+            raise InternalServerError
+
+
+class YearlyRevenueRangeApi(Resource):
+
+    @requires_auth
+    def get(self, yearly_revenue_range_name) -> Response:
+
+        response_obj = {"data": None, "error": None, "success": False}
+
+        try:
+            response_obj["data"] = YearlyRevenueRange[yearly_revenue_range_name].value
             response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
@@ -254,6 +311,26 @@ class IndustryListApi(Resource):
         try:
             accounts = Industry.get_all()
             response_obj["data"] = industries_schema.dump(accounts)
+            response_obj["success"] = True
+            response = jsonify(response_obj)
+            response.status_code = 200
+
+            return response
+
+        except InternalServerError:
+            raise InternalServerError
+
+
+class IndustryApi(Resource):
+
+    @requires_auth
+    def get(self, industry_id):
+
+        response_obj = {"data": None, "error": None, "success": False}
+
+        try:
+            industry = Industry.get_by_id(industry_id)
+            response_obj["data"] = industry_schema.dump(industry)
             response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200

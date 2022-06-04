@@ -6,7 +6,7 @@ from .models import AccountType, CompanyType, EmployeeCountRange, YearlyRevenueR
 
 
 class AccountSchema(ma.Schema):
-    account_type = EnumField(AccountType, by_value=True)
+    account_type = EnumField(AccountType)
     company_profile = fields.Nested("CompanyProfileSchema")
     department = fields.Str()
     email = fields.Str()
@@ -14,7 +14,7 @@ class AccountSchema(ma.Schema):
     id = fields.Int(dump_only=True)
     job_title = fields.Str()
     phone = fields.Str()
-    roles = fields.List(EnumField(Role, by_value=True))
+    roles = fields.List(EnumField(Role, load_by=EnumField.NAME, dump_by=EnumField.NAME))
     sub = fields.Str()
     surnames = fields.Str()
 
