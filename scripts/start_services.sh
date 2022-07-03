@@ -1,4 +1,4 @@
-brew services start postgres
+brew services start postgresql
 brew services start redis
 brew services start rabbitmq
 cd src/
