@@ -174,6 +174,19 @@ class Auth0:
 
 
     @staticmethod
+    def auth0_get_role_permissions(role: str):
+        conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
+
+        conn.request(
+            "GET",
+            f"/api/v2/roles/{role}/permissions",
+            headers=Auth0.get_headers(),
+        )
+
+        return json.loads(conn.getresponse().read())
+
+
+    @staticmethod
     def auth0_get_user_by_email(email):
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 

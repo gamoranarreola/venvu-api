@@ -16,6 +16,8 @@ from app.api.company_profiles import (
     IndustryListApi
 )
 
+from app.api.roles import RolesListApi
+
 
 def create_routes(api: Api):
     api.add_resource(CompanyProfileApi, "/api/company-profiles/<int:company_profile_id>")
@@ -32,3 +34,4 @@ def create_routes(api: Api):
     api.add_resource(ProvincesListApi, "/api/company-profiles/provinces")
     api.add_resource(IndustryListApi, "/api/company-profiles/industries")
     api.add_resource(IndustryApi, "/api/company-profiles/industries/<int:industry_id>")
+    api.add_resource(RolesListApi, "/api/user-management/roles")
