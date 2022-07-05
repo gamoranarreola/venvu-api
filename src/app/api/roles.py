@@ -1,7 +1,7 @@
 from operator import itemgetter
 from flask.wrappers import Response
 from flask_restful import Resource
-from flask import jsonify
+from flask import jsonify, request
 from pytest import Item
 
 from app.api.errors import (
@@ -30,7 +30,7 @@ class RolesListApi(Resource):
                             "description": p["description"]
                         } for p in Auth0.auth0_get_role_permissions(r["id"])
                     ], key=itemgetter("permission_name"))
-                } for r in Auth0.auth0_get_roles()
+                } for r in Auth0.auth0_get_roles() if request.args["account_type"] in r["name"]
             ], key=itemgetter("name"))
 
             response_obj["success"] = True
