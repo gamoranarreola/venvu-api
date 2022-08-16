@@ -24,12 +24,7 @@ class RolesListApi(Resource):
                 {
                     "id": r["id"],
                     "name": r["name"],
-                    "permissions": sorted([
-                        {
-                            "permission_name": p["permission_name"],
-                            "description": p["description"]
-                        } for p in Auth0.auth0_get_role_permissions(r["id"])
-                    ], key=itemgetter("permission_name"))
+                    "description": r["description"],
                 } for r in Auth0.auth0_get_roles() if request.args["account_type"] in r["name"]
             ], key=itemgetter("name"))
 
