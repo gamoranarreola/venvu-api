@@ -135,28 +135,17 @@ class Auth0:
 
 
     @staticmethod
-    def auth0_assign_user_roles(user_id, role_names):
+    def auth0_assign_user_roles(user_id, roles):
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
-
-        all_roles = Auth0.auth0_get_roles()
-        role_ids = []
-
-        for name in role_names:
-            for role in all_roles:
-                if role['name'] == name:
-                    role_ids.append(role['id'])
-
-        data = {"roles": role_ids}
 
         conn.request(
             "POST",
             "/api/v2/users/" + pathname2url(user_id) + "/roles",
-            json.dumps(data),
+            json.dumps(roles),
             headers=Auth0.get_headers(),
         )
 
         print("\n\n/api/v2/users/" + pathname2url(user_id) + "/roles")
-        print("\n\nauth0_assign_user_roles: " + user_id + ''.join(str(role) for role in role_names))
         return conn.getresponse().read()
 
 

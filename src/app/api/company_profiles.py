@@ -7,7 +7,7 @@ import pycountry
 
 from app.api.errors import BadRequestError, InternalServerError, Auth0RequestError
 from app.api.auth0 import requires_auth
-from app.db.models import Account, CompanyProfile, EmployeeCountRange, Industry, Role, AccountType, CompanyType, YearlyRevenueRange
+from app.db.models import Account, CompanyProfile, EmployeeCountRange, Industry, Role, CompanyType, YearlyRevenueRange
 from app.db.schemas import company_profile_schema, account_schema, industries_schema, industry_schema
 from app.tasks import assign_user_roles
 
@@ -72,26 +72,15 @@ class CompanyProfileListApi(Resource):
 
                     account_data = {**req_data.get("account")}
 
-                    account_data["account_type"] = AccountType[
-                        account_data["account_type"]
-                    ]
+                    for idx, role_name in enumerate(account_data["roles"]):
+                        account_data["roles"][idx] = Role(role_name).name
 
-                    if account_data["account_type"] == AccountType._CNS:
-                        account_data["roles"] = [Role._CNS_ADM]
-                        _ = assign_user_roles.apply_async(args=[account.sub, [Role._CNS_ADM.value]])
+                    _ = assign_user_roles.apply_async(args=[account.sub, req_data.get("selectedRoleIds")])
 
-                        try:
-                            _.wait()
-                        except Auth0RequestError:
-                            raise Auth0RequestError
-                    elif account_data["account_type"] == AccountType._VND:
-                        account_data["roles"] = [Role._VND_ADM]
-                        _ = assign_user_roles.apply_async(args=[account.sub, [Role._VND_ADM.value]])
-
-                        try:
-                            _.wait()
-                        except Auth0RequestError:
-                            raise Auth0RequestError
+                    try:
+                        _.wait()
+                    except Auth0RequestError:
+                        raise Auth0RequestError
 
                     account.update(account_schema.load(data=account_data, partial=True))
 

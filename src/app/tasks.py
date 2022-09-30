@@ -9,4 +9,4 @@ def delete_user_from_auth0(email):
 
 @celery.task(name="app.tasks.assign_user_roles")
 def assign_user_roles(user_id, roles):
-    Auth0.auth0_assign_user_roles(user_id=user_id, role_names=roles)
+    Auth0.auth0_assign_user_roles(user_id=user_id, roles=roles)
