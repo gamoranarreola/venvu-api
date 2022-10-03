@@ -1,16 +1,19 @@
 """empty message
 
-Revision ID: 2dfb4ae846d5
-Revises: 
-Create Date: 2022-05-18 16:16:01.300121
+Revision ID: f26bd7f72891
+Revises:
+Create Date: 2022-10-03 10:49:56.388407
 
 """
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
+import json
+
+from app.db.models import Industry
 
 # revision identifiers, used by Alembic.
-revision = '2dfb4ae846d5'
+revision = 'f26bd7f72891'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,7 +28,7 @@ def upgrade():
     sa.Column('city', sa.String(length=32), nullable=True),
     sa.Column('company_type', sa.Enum('_PUB', '_PRV', '_PRT', '_SLF', '_GOV', '_NPR', '_SLP', name='companytype'), nullable=True),
     sa.Column('country', sa.String(length=32), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.Column('description', sa.String(length=2048), nullable=True),
     sa.Column('employee_count_range', sa.Enum('_1_TO_4', '_5_TO_9', '_10_TO_19', '_20_TO_49', '_50_TO_99', '_100_TO_249', '_250_TO_499', '_500_TO_999', '_1000PLUS', name='employeecountrange'), nullable=True),
     sa.Column('founded', sa.Integer(), nullable=True),
@@ -50,7 +53,7 @@ def upgrade():
     sa.UniqueConstraint('website')
     )
     op.create_table('industry',
-    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
@@ -60,6 +63,7 @@ def upgrade():
     op.create_table('account',
     sa.Column('account_type', sa.Enum('_CNS', '_VND', name='accounttype'), nullable=True),
     sa.Column('company_profile_id', sa.Integer(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
     sa.Column('department', sa.String(length=32), nullable=True),
     sa.Column('email', sa.String(length=64), nullable=True),
     sa.Column('given_names', sa.String(length=32), nullable=True),
@@ -69,7 +73,6 @@ def upgrade():
     sa.Column('sub', sa.String(length=64), nullable=True),
     sa.Column('roles', postgresql.ARRAY(sa.Enum('_VND_ADM', '_VND_REP', '_VND_PUB', '_CNS_ADM', '_CNS_REP', '_CNS_PUB', name='role')), nullable=True),
     sa.Column('surnames', sa.String(length=32), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['company_profile_id'], ['company_profile.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
@@ -77,6 +80,9 @@ def upgrade():
     sa.UniqueConstraint('sub')
     )
     # ### end Alembic commands ###
+
+    industries_json = json.loads(open("src/utils/seed_data/industries.json").read())
+    op.bulk_insert(Industry.__table__, industries_json)
 
 
 def downgrade():

@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import Enum
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.sql import func
 
 from app.db import db
 
@@ -56,10 +57,10 @@ class CompanyType(Enum):
 class Industry(db.Model):
     __tablename__ = "industry"
 
-    created_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, server_default=func.now())
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-    updated_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime, onupdate=func.now())
 
     def __init__(self, name):
         self.created_at = datetime.utcnow()
@@ -109,7 +110,7 @@ class CompanyProfile(db.Model):
     city = db.Column(db.String(32))
     company_type = db.Column(db.Enum(CompanyType), nullable=True)
     country = db.Column(db.String(32))
-    created_at = db.Column(db.DateTime)
+    created_at = db.Column(db.DateTime, server_default=func.now())
     description = db.Column(db.String(2048))
     employee_count_range = db.Column(db.Enum(EmployeeCountRange), nullable=True)
     founded = db.Column(db.Integer)
@@ -125,7 +126,7 @@ class CompanyProfile(db.Model):
     state_province = db.Column(db.String(32))
     state_tax_id = db.Column(db.String(16))
     tax_id_state = db.Column(db.String(2))
-    updated_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime, onupdate=func.now())
     website = db.Column(db.String(64), unique=True)
     yearly_revenue_range = db.Column(db.Enum(YearlyRevenueRange), nullable=True)
 
@@ -219,6 +220,7 @@ class Account(db.Model):
         db.ForeignKey("company_profile.id", ondelete="CASCADE"),
         nullable=True,
     )
+    created_at = db.Column(db.DateTime, server_default=func.now())
     department = db.Column(db.String(32))
     email = db.Column(db.String(64), unique=True)
     given_names = db.Column(db.String(32))
@@ -228,8 +230,7 @@ class Account(db.Model):
     sub = db.Column(db.String(64), unique=True)
     roles = db.Column(postgresql.ARRAY(db.Enum(Role)))
     surnames = db.Column(db.String(32))
-    created_at = db.Column(db.DateTime)
-    updated_at = db.Column(db.DateTime)
+    updated_at = db.Column(db.DateTime, onupdate=func.now())
 
     def __init__(
         self,
