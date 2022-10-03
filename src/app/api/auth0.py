@@ -137,16 +137,28 @@ class Auth0:
     @staticmethod
     def auth0_assign_user_roles(user_id, roles):
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
+        roles_string = "{\"roles\":["
+
+        for idx, role in enumerate(roles):
+            roles_string += f"\"{role}\""
+
+            if idx < (len(roles) - 1):
+                roles_string += ','
+
+        roles_string += "]}"
+
+        print(f"roles string: {roles_string}")
 
         conn.request(
             "POST",
             "/api/v2/users/" + pathname2url(user_id) + "/roles",
-            json.dumps(roles),
+            json.dumps(roles_string),
             headers=Auth0.get_headers(),
         )
 
-        print("\n\n/api/v2/users/" + pathname2url(user_id) + "/roles")
-        return conn.getresponse().read()
+        res = json.loads(conn.getresponse().read())
+        print(res)
+        return res
 
 
     @staticmethod
@@ -205,4 +217,5 @@ class Auth0:
         return {
             "authorization": "Bearer " + Auth0.auth0_get_mgmt_api_token(),
             "content-type": "application/json",
+            "cache-control": "no-cache"
         }
