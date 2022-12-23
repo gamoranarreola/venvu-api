@@ -1,15 +1,11 @@
-from flask import request, jsonify
-from flask_restful import Resource
+from flask import jsonify, request
 from flask.wrappers import Response
+from flask_restful import Resource
 from sqlalchemy.sql.expression import and_
 
-from app.api.errors import (
-    BadRequestError,
-    DuplicateAdminSignupError,
-    InternalServerError,
-)
-
 from app.api.auth0 import requires_auth
+from app.api.errors import (BadRequestError, DuplicateAdminSignupError,
+                            InternalServerError)
 from app.db.models import Account, Role
 from app.db.schemas import account_schema
 from app.tasks import delete_user_from_auth0
@@ -31,9 +27,7 @@ class AccountListApi(Resource):
             req_data = request.get_json()
 
             # First check if an account exists for that email address.
-            account = Account.query.filter_by(
-                email=req_data.get("email")
-            ).first()
+            account = Account.query.filter_by(email=req_data.get("email")).first()
 
             # New user signup.
             if account is None:
@@ -56,9 +50,7 @@ class AccountListApi(Resource):
                     account = Account(**req_data)
                     account.save()
                 else:
-                    _ = delete_user_from_auth0.apply_async(
-                        args=[req_data.get("email")]
-                    )
+                    _ = delete_user_from_auth0.apply_async(args=[req_data.get("email")])
 
                     raise DuplicateAdminSignupError
 

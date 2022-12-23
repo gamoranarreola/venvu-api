@@ -1,16 +1,16 @@
 import os
 
-from flask import Flask
-from flask_restful import Api
-from flask_jwt_extended import JWTManager
-from flask_cors import CORS
-from flask_migrate import Migrate
-from flask_mail import Mail
 from celery import Celery
+from flask import Flask
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
+from flask_mail import Mail
+from flask_migrate import Migrate
+from flask_restful import Api
 
-from config import Config
 from app.api.errors import errors
 from app.db import db, init_marshmallow
+from config import Config
 
 if os.environ.get("CONFIG_SETUP") == "development":
     from config import DevelopmentConfig as UseConfig
@@ -21,9 +21,7 @@ mail = Mail()
 migrate = Migrate()
 
 celery = Celery(
-    __name__,
-    broker=Config.CELERY_BROKER_URL,
-    result_backend=Config.RESULT_BACKEND
+    __name__, broker=Config.CELERY_BROKER_URL, result_backend=Config.RESULT_BACKEND
 )
 
 from app.api.routes import create_routes  # noqa: E402
@@ -36,11 +34,7 @@ def create_app():
 
     CORS(
         flask_app,
-        resources={
-            r"/api/*": {
-                "origins": ["http://localhost:4200", "https://venvu-client.herokuapp.com"]
-            }
-        },
+        resources={r"/api/*": {"origins": ["http://localhost:4200"]}},
     )
 
     init_extensions(flask_app)

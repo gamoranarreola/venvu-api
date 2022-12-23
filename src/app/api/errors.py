@@ -41,6 +41,6 @@ errors = {
     "DuplicateResourceError": {"message": "Duplicate resource", "status": 409},
     "Auth0RequestError": {
         "message": "An error occurred while communicating with Auth0.",
-        "status": 500
-    }
+        "status": 500,
+    },
 }

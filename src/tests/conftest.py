@@ -1,19 +1,14 @@
+import http.client
+import json
 import os
 
-import http.client
 import pytest
-import json
 
-from app.api.auth0 import Auth0
 from app import create_app
+from app.api.auth0 import Auth0
 from app.db import db
-from app.db.models import (
-    Account,
-    CompanyProfile,
-    EmployeeCountRange,
-    Role,
-    YearlyRevenueRange,
-)
+from app.db.models import (Account, CompanyProfile, EmployeeCountRange, Role,
+                           YearlyRevenueRange)
 
 
 @pytest.fixture
@@ -47,7 +42,9 @@ def create_company_profile():
 def add_admin(create_account, create_company_profile):
     email = "vms_admin@bcdev.works"
     auth0_admin_user = Auth0.auth0_create_user(email, "s8dKU7Sp9o", True)
-    Auth0.auth0_assign_user_roles(auth0_admin_user.get("user_id"), "rol_mOHJ7dARVN420281")
+    Auth0.auth0_assign_user_roles(
+        auth0_admin_user.get("user_id"), "rol_mOHJ7dARVN420281"
+    )
 
     account = create_account(
         {
@@ -68,7 +65,9 @@ def add_admin(create_account, create_company_profile):
 def add_admin_no_company_profile(create_account):
     email = "vms_admin@bcdev.works"
     auth0_admin_user = Auth0.auth0_create_user(email, "s8dKU7Sp9o", True)
-    Auth0.auth0_assign_user_roles(auth0_admin_user.get("user_id"), "rol_mOHJ7dARVN420281")
+    Auth0.auth0_assign_user_roles(
+        auth0_admin_user.get("user_id"), "rol_mOHJ7dARVN420281"
+    )
 
     account = create_account(
         {

@@ -1,7 +1,7 @@
 from app import create_app
-from app.db.models import AccountType, EmployeeCountRange, YearlyRevenueRange, Role
 from app.api.auth0 import Auth0
-
+from app.db.models import (AccountType, EmployeeCountRange, Role,
+                           YearlyRevenueRange)
 
 new_user = {"email": "gmoran@bcdev.works", "sub": "auth0|61cdcdafe09c83006f1aba14"}
 

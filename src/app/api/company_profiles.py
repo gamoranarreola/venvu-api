@@ -1,19 +1,23 @@
 from operator import itemgetter, or_
-from flask import request, jsonify
-from flask_restful import Resource
-from flask.wrappers import Response
-from sqlalchemy.sql.expression import and_, or_
-import pycountry
 
-from app.api.errors import BadRequestError, InternalServerError, Auth0RequestError
+import pycountry
+from flask import jsonify, request
+from flask.wrappers import Response
+from flask_restful import Resource
+from sqlalchemy.sql.expression import and_, or_
+
 from app.api.auth0 import requires_auth
-from app.db.models import Account, CompanyProfile, EmployeeCountRange, Industry, Role, CompanyType, YearlyRevenueRange
-from app.db.schemas import company_profile_schema, account_schema, industries_schema, industry_schema
+from app.api.errors import (Auth0RequestError, BadRequestError,
+                            InternalServerError)
+from app.db.models import (Account, CompanyProfile, CompanyType,
+                           EmployeeCountRange, Industry, Role,
+                           YearlyRevenueRange)
+from app.db.schemas import (account_schema, company_profile_schema,
+                            industries_schema, industry_schema)
 from app.tasks import assign_user_roles
 
 
 class CompanyProfileListApi(Resource):
-
     @requires_auth
     def post(self) -> Response:
 
@@ -75,7 +79,9 @@ class CompanyProfileListApi(Resource):
                     for idx, role_name in enumerate(account_data["roles"]):
                         account_data["roles"][idx] = Role(role_name).name
 
-                    _ = assign_user_roles.apply_async(args=[account.sub, req_data.get("selectedRoleIds")])
+                    _ = assign_user_roles.apply_async(
+                        args=[account.sub, req_data.get("selectedRoleIds")]
+                    )
 
                     try:
                         _.wait()
@@ -112,7 +118,6 @@ class CompanyProfileListApi(Resource):
 
 
 class CompanyProfileApi(Resource):
-
     @requires_auth
     def patch(self, company_profile_id) -> Response:
 
@@ -138,14 +143,16 @@ class CompanyProfileApi(Resource):
 
 
 class CompanyTypeListApi(Resource):
-
     @requires_auth
     def get(self) -> Response:
 
         response_obj = {"data": None, "error": None, "success": False}
 
         try:
-            response_obj["data"] = sorted([{"code": d.name, "name": d.value} for d in CompanyType], key=itemgetter("name"))
+            response_obj["data"] = sorted(
+                [{"code": d.name, "name": d.value} for d in CompanyType],
+                key=itemgetter("name"),
+            )
             response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
@@ -157,7 +164,6 @@ class CompanyTypeListApi(Resource):
 
 
 class CompanyTypeApi(Resource):
-
     @requires_auth
     def get(self, company_type_name) -> Response:
 
@@ -176,14 +182,15 @@ class CompanyTypeApi(Resource):
 
 
 class EmployeeCountRangeListApi(Resource):
-
     @requires_auth
     def get(self) -> Response:
 
         response_obj = {"data": None, "error": None, "success": False}
 
         try:
-            response_obj["data"] = [{"code": d.name, "name": d.value} for d in EmployeeCountRange]
+            response_obj["data"] = [
+                {"code": d.name, "name": d.value} for d in EmployeeCountRange
+            ]
             response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
@@ -195,7 +202,6 @@ class EmployeeCountRangeListApi(Resource):
 
 
 class EmployeeCountRangeApi(Resource):
-
     @requires_auth
     def get(self, employee_count_range_name) -> Response:
 
@@ -214,14 +220,15 @@ class EmployeeCountRangeApi(Resource):
 
 
 class YearlyRevenueRangeListApi(Resource):
-
     @requires_auth
     def get(self) -> Response:
 
         response_obj = {"data": None, "error": None, "success": False}
 
         try:
-            response_obj["data"] = [{"code": d.name, "name": d.value} for d in YearlyRevenueRange]
+            response_obj["data"] = [
+                {"code": d.name, "name": d.value} for d in YearlyRevenueRange
+            ]
             response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
@@ -233,7 +240,6 @@ class YearlyRevenueRangeListApi(Resource):
 
 
 class YearlyRevenueRangeApi(Resource):
-
     @requires_auth
     def get(self, yearly_revenue_range_name) -> Response:
 
@@ -252,14 +258,19 @@ class YearlyRevenueRangeApi(Resource):
 
 
 class CountriesListApi(Resource):
-
     @requires_auth
     def get(self) -> Response:
 
         response_obj = {"data": None, "error": None, "success": False}
 
         try:
-            response_obj["data"] = sorted([{"code": d.alpha_3, "country_code": d.alpha_2, "name": d.name} for d in pycountry.countries], key=itemgetter("name"))
+            response_obj["data"] = sorted(
+                [
+                    {"code": d.alpha_3, "country_code": d.alpha_2, "name": d.name}
+                    for d in pycountry.countries
+                ],
+                key=itemgetter("name"),
+            )
             response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
@@ -271,7 +282,6 @@ class CountriesListApi(Resource):
 
 
 class ProvincesListApi(Resource):
-
     @requires_auth
     def get(self) -> Response:
 
@@ -279,7 +289,15 @@ class ProvincesListApi(Resource):
         args = request.args
 
         try:
-            response_obj["data"] = sorted([{"code": d.code, "name": d.name} for d in pycountry.subdivisions.get(country_code=args["country_code"])], key=itemgetter("name"))
+            response_obj["data"] = sorted(
+                [
+                    {"code": d.code, "name": d.name}
+                    for d in pycountry.subdivisions.get(
+                        country_code=args["country_code"]
+                    )
+                ],
+                key=itemgetter("name"),
+            )
             response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
@@ -291,7 +309,6 @@ class ProvincesListApi(Resource):
 
 
 class IndustryListApi(Resource):
-
     @requires_auth
     def get(self) -> Response:
 
@@ -311,7 +328,6 @@ class IndustryListApi(Resource):
 
 
 class IndustryApi(Resource):
-
     @requires_auth
     def get(self, industry_id):
 

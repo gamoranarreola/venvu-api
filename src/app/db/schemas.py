@@ -1,8 +1,10 @@
-from marshmallow_enum import EnumField
 from marshmallow import fields
+from marshmallow_enum import EnumField
 
 from app.db import ma
-from .models import AccountType, CompanyType, EmployeeCountRange, YearlyRevenueRange, Role
+
+from .models import (AccountType, CompanyType, EmployeeCountRange, Role,
+                     YearlyRevenueRange)
 
 
 class AccountSchema(ma.Schema):

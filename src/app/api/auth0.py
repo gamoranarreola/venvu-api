@@ -1,12 +1,12 @@
-import os
-import json
 import http.client
+import json
+import os
+from functools import wraps
 from urllib.parse import urlencode
 from urllib.request import pathname2url
 
 import six
-from flask import request, _request_ctx_stack
-from functools import wraps
+from flask import _request_ctx_stack, request
 from jose import jwt
 
 from app.api.errors import UnauthorizedError
@@ -33,7 +33,9 @@ def requires_auth(f):
     def decorated(*args, **kwargs):
         token = get_token_auth_header()
         jsonurl = six.moves.urllib.request.urlopen(
-            "https://" + os.environ.get("AUTH0_DOMAIN") + "/.well-known/jwks.json"  # noqa: E501
+            "https://"
+            + os.environ.get("AUTH0_DOMAIN")
+            + "/.well-known/jwks.json"  # noqa: E501
         )
         jwks = json.loads(jsonurl.read())
         unverified_header = jwt.get_unverified_header(token)
@@ -83,7 +85,6 @@ class Auth0:
     last_vms_admin_user_id = None
     last_vms_user_id = None
 
-
     @staticmethod
     def auth0_get_mgmt_api_token():
         """
@@ -108,7 +109,6 @@ class Auth0:
 
         return json.loads(conn.getresponse().read()).get("access_token")
 
-
     @staticmethod
     def auth0_create_user(email, password, is_admin=False):
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
@@ -120,9 +120,7 @@ class Auth0:
         }
 
         conn.request(
-            "POST", "/api/v2/users",
-            json.dumps(data),
-            headers=Auth0.get_headers()
+            "POST", "/api/v2/users", json.dumps(data), headers=Auth0.get_headers()
         )
 
         user = json.loads(conn.getresponse().read())
@@ -135,17 +133,16 @@ class Auth0:
 
         return user
 
-
     @staticmethod
     def auth0_assign_user_roles(user_id, roles):
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
-        roles_string = "{\"roles\":["
+        roles_string = '{"roles":['
 
         for idx, role in enumerate(roles):
-            roles_string += f"\"{role}\""
+            roles_string += f'"{role}"'
 
             if idx < (len(roles) - 1):
-                roles_string += ','
+                roles_string += ","
 
         roles_string += "]}"
 
@@ -162,7 +159,6 @@ class Auth0:
         print(res)
         return res
 
-
     @staticmethod
     def auth0_get_roles():
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
@@ -174,7 +170,6 @@ class Auth0:
         )
 
         return json.loads(conn.getresponse().read())
-
 
     @staticmethod
     def auth0_get_role_permissions(role: str):
@@ -188,7 +183,6 @@ class Auth0:
 
         return json.loads(conn.getresponse().read())
 
-
     @staticmethod
     def auth0_get_user_by_email(email):
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
@@ -201,18 +195,15 @@ class Auth0:
 
         return json.loads(conn.getresponse().read())
 
-
     @staticmethod
     def auth0_delete_user(id):
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 
         conn.request(
-            "DELETE", "/api/v2/users/" + pathname2url(id),
-            headers=Auth0.get_headers()
+            "DELETE", "/api/v2/users/" + pathname2url(id), headers=Auth0.get_headers()
         )
         print("\n\nauth0_delete_user: " + id)
         return conn.getresponse().read()
-
 
     @staticmethod
     def get_headers():
@@ -220,5 +211,5 @@ class Auth0:
         return {
             "authorization": "Bearer " + Auth0.auth0_get_mgmt_api_token(),
             "content-type": "application/json",
-            "cache-control": "no-cache"
+            "cache-control": "no-cache",
         }

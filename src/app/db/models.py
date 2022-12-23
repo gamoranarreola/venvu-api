@@ -1,5 +1,6 @@
 from datetime import datetime
 from enum import Enum
+
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql import func
 
@@ -135,13 +136,13 @@ class CompanyProfile(db.Model):
         name,
         state_tax_id,
         tax_id_state,
-        address_line_1='',
-        address_line_2='',
-        address_line_3='',
-        city='',
+        address_line_1="",
+        address_line_2="",
+        address_line_3="",
+        city="",
         company_type=None,
-        country='',
-        description='',
+        country="",
+        description="",
         employee_count_range=None,
         founded=None,
         industry=None,
@@ -149,10 +150,10 @@ class CompanyProfile(db.Model):
         is_tax_id_verified=False,
         key_products=[],
         key_services=[],
-        parent_company='',
-        postal_code='',
-        state_province='',
-        website='',
+        parent_company="",
+        postal_code="",
+        state_province="",
+        website="",
         yearly_revenue_range=None,
     ):
         self.address_line_1 = address_line_1
