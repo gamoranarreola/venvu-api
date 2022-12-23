@@ -21,7 +21,7 @@ mail = Mail()
 migrate = Migrate()
 
 celery = Celery(
-    __name__, broker=Config.CELERY_BROKER_URL, result_backend=Config.RESULT_BACKEND
+    __name__, broker=Config.CELERY_BROKER_URL, result_backend=Config.RESULT_BACKEND  # noqa: E501
 )
 
 from app.api.routes import create_routes  # noqa: E402

@@ -27,7 +27,7 @@ class AccountListApi(Resource):
             req_data = request.get_json()
 
             # First check if an account exists for that email address.
-            account = Account.query.filter_by(email=req_data.get("email")).first()
+            account = Account.query.filter_by(email=req_data.get("email")).first()  # noqa: E501
 
             # New user signup.
             if account is None:
@@ -50,7 +50,7 @@ class AccountListApi(Resource):
                     account = Account(**req_data)
                     account.save()
                 else:
-                    _ = delete_user_from_auth0.apply_async(args=[req_data.get("email")])
+                    _ = delete_user_from_auth0.apply_async(args=[req_data.get("email")])  # noqa: E501
 
                     raise DuplicateAdminSignupError
 
