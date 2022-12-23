@@ -33,7 +33,7 @@ def requires_auth(f):
     def decorated(*args, **kwargs):
         token = get_token_auth_header()
         jsonurl = six.moves.urllib.request.urlopen(
-            "https://" + os.environ.get("AUTH0_DOMAIN") + "/.well-known/jwks.json"
+            "https://" + os.environ.get("AUTH0_DOMAIN") + "/.well-known/jwks.json"  # noqa: E501
         )
         jwks = json.loads(jsonurl.read())
         unverified_header = jwt.get_unverified_header(token)
@@ -73,7 +73,7 @@ def requires_auth(f):
 class Auth0:
     vms_api_app = {
         "client_id": "nl7qE0EZL2d0mBc7NAsnwhqarhEsTnTA",
-        "client_secret": "p2H_Z4w5LAJDcxH4CzEe0ewvt6COHCRf6WbJsyVN5PVvRttUnMo2coa_ElCVgUj8",
+        "client_secret": "p2H_Z4w5LAJDcxH4CzEe0ewvt6COHCRf6WbJsyVN5PVvRttUnMo2coa_ElCVgUj8",  # noqa: E501
     }
 
     auth0_system_api = {
@@ -120,7 +120,9 @@ class Auth0:
         }
 
         conn.request(
-            "POST", "/api/v2/users", json.dumps(data), headers=Auth0.get_headers()
+            "POST", "/api/v2/users",
+            json.dumps(data),
+            headers=Auth0.get_headers()
         )
 
         user = json.loads(conn.getresponse().read())
@@ -205,7 +207,8 @@ class Auth0:
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 
         conn.request(
-            "DELETE", "/api/v2/users/" + pathname2url(id), headers=Auth0.get_headers()
+            "DELETE", "/api/v2/users/" + pathname2url(id),
+            headers=Auth0.get_headers()
         )
         print("\n\nauth0_delete_user: " + id)
         return conn.getresponse().read()

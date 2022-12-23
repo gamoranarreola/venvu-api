@@ -18,7 +18,8 @@ from app.tasks import delete_user_from_auth0
 class AccountListApi(Resource):
 
     """
-    This endpoint will always be called after a user logs on to the VMS through Auth0.
+    This endpoint will always be called after a user logs on to the VMS through
+    Auth0.
     """
 
     @requires_auth
@@ -30,13 +31,16 @@ class AccountListApi(Resource):
             req_data = request.get_json()
 
             # First check if an account exists for that email address.
-            account = Account.query.filter_by(email=req_data.get("email")).first()
+            account = Account.query.filter_by(
+                email=req_data.get("email")
+            ).first()
 
             # New user signup.
             if account is None:
                 """
                 Query the accounts table for an account that:
-                1) Has an email address from the same company (based on the email domain)
+                1) Has an email address from the same company (based on the
+                email domain)
                 2) Has an admin role (vendor admin or consumer admin)
                 """
                 email_domain = req_data.get("email").split("@")[1]
@@ -52,7 +56,10 @@ class AccountListApi(Resource):
                     account = Account(**req_data)
                     account.save()
                 else:
-                    _ = delete_user_from_auth0.apply_async(args=[req_data.get("email")])
+                    _ = delete_user_from_auth0.apply_async(
+                        args=[req_data.get("email")]
+                    )
+
                     raise DuplicateAdminSignupError
 
             response_obj["data"] = account_schema.dump(account)

@@ -21,10 +21,12 @@ mail = Mail()
 migrate = Migrate()
 
 celery = Celery(
-    __name__, broker=Config.CELERY_BROKER_URL, result_backend=Config.RESULT_BACKEND
+    __name__,
+    broker=Config.CELERY_BROKER_URL,
+    result_backend=Config.RESULT_BACKEND
 )
 
-from app.api.routes import create_routes
+from app.api.routes import create_routes  # noqa: E402
 
 
 def create_app():
@@ -43,7 +45,7 @@ def create_app():
 
     init_extensions(flask_app)
     create_routes(api=Api(app=flask_app, errors=errors))
-    jwt = JWTManager(app=flask_app)
+    _ = JWTManager(app=flask_app)
 
     return flask_app
 
