@@ -120,7 +120,9 @@ class Auth0:
         }
 
         conn.request(
-            "POST", "/api/v2/users", json.dumps(data), headers=Auth0.get_headers()
+            "POST", "/api/v2/users",
+            json.dumps(data),
+            headers=Auth0.get_headers()
         )
 
         user = json.loads(conn.getresponse().read())
@@ -136,10 +138,10 @@ class Auth0:
     @staticmethod
     def auth0_assign_user_roles(user_id, roles):
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
-        roles_string = '{"roles":['
+        roles_string = "{\"roles\":["
 
         for idx, role in enumerate(roles):
-            roles_string += f'"{role}"'
+            roles_string += f"\"{role}\""
 
             if idx < (len(roles) - 1):
                 roles_string += ","
@@ -200,7 +202,9 @@ class Auth0:
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))
 
         conn.request(
-            "DELETE", "/api/v2/users/" + pathname2url(id), headers=Auth0.get_headers()
+            "DELETE",
+            "/api/v2/users/" + pathname2url(id),
+            headers=Auth0.get_headers()
         )
         print("\n\nauth0_delete_user: " + id)
         return conn.getresponse().read()

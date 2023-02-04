@@ -31,7 +31,7 @@ class CompanyProfileListApi(Resource):
             provided email address.
             """
             req_data = request.get_json()
-            account = Account.query.filter_by(email=req_data.get("email")).first()
+            account = Account.query.filter_by(email=req_data.get("email")).first()  # noqa: E501
 
             """
             Account not found.
@@ -40,9 +40,7 @@ class CompanyProfileListApi(Resource):
 
                 response_obj[
                     "error"
-                ] = "An account with the email address {} does not exist.".format(
-                    req_data.get("email")
-                )
+                ] = "An account with the email address {} does not exist.".format(req_data.get("email"))  # noqa: E501
                 status_code = 404
 
             else:
@@ -52,7 +50,7 @@ class CompanyProfileListApi(Resource):
                 """
                 company_profile = CompanyProfile.query.filter(
                     or_(
-                        CompanyProfile.name == req_data.get("company_profile")["name"],
+                        CompanyProfile.name == req_data.get("company_profile")["name"],  # noqa: E501
                         CompanyProfile.website
                         == req_data.get("company_profile")["website"],
                         and_(
@@ -70,7 +68,7 @@ class CompanyProfileListApi(Resource):
                 """
                 if company_profile is None:
 
-                    company_profile = CompanyProfile(**req_data.get("company_profile"))
+                    company_profile = CompanyProfile(**req_data.get("company_profile"))  # noqa: E501
                     company_profile.accounts.append(account)
                     company_profile.save()
 
@@ -88,9 +86,9 @@ class CompanyProfileListApi(Resource):
                     except Auth0RequestError:
                         raise Auth0RequestError
 
-                    account.update(account_schema.load(data=account_data, partial=True))
+                    account.update(account_schema.load(data=account_data, partial=True))  # noqa: E501
 
-                    response_obj["data"] = company_profile_schema.dump(company_profile)
+                    response_obj["data"] = company_profile_schema.dump(company_profile)  # noqa: E501
                     response_obj["success"] = True
                     status_code = 200
 
@@ -101,7 +99,7 @@ class CompanyProfileListApi(Resource):
 
                     response_obj[
                         "error"
-                    ] = "The company name and website must be unique as well as the tax ID within the provided state."
+                    ] = "The company name and website must be unique as well as the tax ID within the provided state."  # noqa: E501
 
                     status_code = 400
 
@@ -125,7 +123,7 @@ class CompanyProfileApi(Resource):
 
         try:
             req_data = request.get_json()
-            update_data = company_profile_schema.load(data=req_data, partial=True)
+            update_data = company_profile_schema.load(data=req_data, partial=True)  # noqa: E501
             company_profile = CompanyProfile.get_by_id(company_profile_id)
             company_profile.update(update_data)
             response_obj["data"] = company_profile_schema.dump(company_profile)
@@ -208,7 +206,7 @@ class EmployeeCountRangeApi(Resource):
         response_obj = {"data": None, "error": None, "success": False}
 
         try:
-            response_obj["data"] = EmployeeCountRange[employee_count_range_name].value
+            response_obj["data"] = EmployeeCountRange[employee_count_range_name].value  # noqa: E501
             response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
@@ -246,7 +244,7 @@ class YearlyRevenueRangeApi(Resource):
         response_obj = {"data": None, "error": None, "success": False}
 
         try:
-            response_obj["data"] = YearlyRevenueRange[yearly_revenue_range_name].value
+            response_obj["data"] = YearlyRevenueRange[yearly_revenue_range_name].value  # noqa: E501
             response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
@@ -266,7 +264,7 @@ class CountriesListApi(Resource):
         try:
             response_obj["data"] = sorted(
                 [
-                    {"code": d.alpha_3, "country_code": d.alpha_2, "name": d.name}
+                    {"code": d.alpha_3, "country_code": d.alpha_2, "name": d.name}  # noqa: E501
                     for d in pycountry.countries
                 ],
                 key=itemgetter("name"),
