@@ -148,8 +148,6 @@ class Auth0:
 
         roles_string += "]}"
 
-        print(f"roles string: {roles_string}")
-
         conn.request(
             "POST",
             "/api/v2/users/" + pathname2url(user_id) + "/roles",

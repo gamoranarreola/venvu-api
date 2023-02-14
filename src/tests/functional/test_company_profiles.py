@@ -1,5 +1,4 @@
-from app import create_app
-from app.db.models import AccountType
+from app.db.models import AccountType, Role
 
 
 def test_create_company_profile(
@@ -18,6 +17,7 @@ def test_create_company_profile(
                     "surnames": "Moran-Arreola",
                     "department": "IT",
                     "job_title": "Manager",
+                    "roles": [Role._CNS_REP.name, Role._CNS_PUB.name]
                 },
                 "company_profile": {
                     "name": "TestCompany One",

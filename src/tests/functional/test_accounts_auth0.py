@@ -1,9 +1,15 @@
-from app import create_app
 from app.api.auth0 import Auth0
-from app.db.models import (AccountType, EmployeeCountRange, Role,
-                           YearlyRevenueRange)
+from app.db.models import (
+    AccountType,
+    EmployeeCountRange,
+    Role,
+    YearlyRevenueRange
+)
 
-new_user = {"email": "gmoran@bcdev.works", "sub": "auth0|61cdcdafe09c83006f1aba14"}
+new_user = {
+    "email": "gmoran@bcdev.works",
+    "sub": "auth0|61cdcdafe09c83006f1aba14"
+}
 
 company_profile = {
     "address_line_1": "1000 Corellian Way",
@@ -29,7 +35,7 @@ run.
 """
 
 
-def test_account_user_exists(app, get_vms_api_auth_token, auth0_api_create_user):
+def test_account_user_exists(app, get_vms_api_auth_token):
 
     with app.test_client() as client:
 
@@ -42,13 +48,13 @@ def test_account_user_exists(app, get_vms_api_auth_token, auth0_api_create_user)
             headers={"authorization": get_vms_api_auth_token()},
         )
 
-        print("\n\nTEST OUTPUT:\nlogged in with account: {}".format(response.data))
+        print("\n\nTEST OUTPUT:\nlogged in with account: {}".format(response.data))  # noqa: E501
         assert response.status_code == 200
 
 
 """
-In this case, a new user is attempting signup and his or her organization already
-has an admin user.
+In this case, a new user is attempting signup and his or her organization
+already has an admin user.
 
 In this case, an admin user is created in Auth0 before the test is run.
 """
@@ -95,22 +101,23 @@ def test_create_new_account_has_no_admin(
 
 
 """
-In this case, an admin user exists and is completing signup (account type and admin info)
+In this case, an admin user exists and is completing signup
+(account type and admin info)
 """
 
 
-def test_update_account(app, add_admin_no_company_profile, get_vms_api_auth_token):
+def test_update_account(app, add_admin_no_company_profile, get_vms_api_auth_token):  # noqa: E501
     with app.test_client() as client:
 
         response = client.put(
             "/api/accounts/1",
             json={
-                "account_type": AccountType._CNS.value,
+                "account_type": AccountType._CNS.name,
                 "given_names": "Guillermo Alberto",
                 "surnames": "Moran-Arreola",
                 "department": "IT",
                 "job_title": "Manager",
-                "roles": [Role._CNS_ADM.value],
+                "roles": [Role._CNS_ADM.name],
             },
             headers={"authorization": get_vms_api_auth_token()},
         )
