@@ -1,10 +1,9 @@
-from operator import itemgetter, or_
+from operator import itemgetter
 
 import pycountry
 from flask import jsonify, request
 from flask.wrappers import Response
 from flask_restful import Resource
-from sqlalchemy.sql.expression import and_, or_
 
 from app.api.auth0 import requires_auth
 from app.api.errors import (Auth0RequestError, BadRequestError,
@@ -21,7 +20,12 @@ class CompanyProfileListApi(Resource):
     @requires_auth
     def post(self) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
+
         status_code = None
 
         try:
@@ -31,7 +35,10 @@ class CompanyProfileListApi(Resource):
             provided email address.
             """
             req_data = request.get_json()
-            account = Account.query.filter_by(email=req_data.get("email")).first()  # noqa: E501
+
+            account = Account.query.filter_by(
+                email=req_data.get("email")
+            ).first()
 
             """
             Account not found.
@@ -48,18 +55,8 @@ class CompanyProfileListApi(Resource):
                 """
                 Query for a company profile with the provided name.
                 """
-                company_profile = CompanyProfile.query.filter(
-                    or_(
-                        CompanyProfile.name == req_data.get("company_profile")["name"],  # noqa: E501
-                        CompanyProfile.website
-                        == req_data.get("company_profile")["website"],
-                        and_(
-                            CompanyProfile.state_tax_id
-                            == req_data.get("company_profile")["state_tax_id"],
-                            CompanyProfile.tax_id_state
-                            == req_data.get("company_profile")["tax_id_state"],
-                        ),
-                    )
+                company_profile = CompanyProfile.query.filter_by(
+                    name=req_data.get("company_profile")["name"]
                 ).first()
 
                 """
@@ -68,7 +65,10 @@ class CompanyProfileListApi(Resource):
                 """
                 if company_profile is None:
 
-                    company_profile = CompanyProfile(**req_data.get("company_profile"))  # noqa: E501
+                    company_profile = CompanyProfile(
+                        **req_data.get("company_profile")
+                    )
+
                     company_profile.accounts.append(account)
                     company_profile.save()
 
@@ -86,9 +86,14 @@ class CompanyProfileListApi(Resource):
                     except Auth0RequestError:
                         raise Auth0RequestError
 
-                    account.update(account_schema.load(data=account_data, partial=True))  # noqa: E501
+                    account.update(
+                        account_schema.load(data=account_data, partial=True)
+                    )
 
-                    response_obj["data"] = company_profile_schema.dump(company_profile)  # noqa: E501
+                    response_obj["data"] = company_profile_schema.dump(
+                        company_profile
+                    )
+
                     response_obj["success"] = True
                     status_code = 200
 
@@ -119,11 +124,19 @@ class CompanyProfileApi(Resource):
     @requires_auth
     def patch(self, company_profile_id) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
             req_data = request.get_json()
-            update_data = company_profile_schema.load(data=req_data, partial=True)  # noqa: E501
+
+            update_data = company_profile_schema.load(
+                data=req_data, partial=True
+            )
+
             company_profile = CompanyProfile.get_by_id(company_profile_id)
             company_profile.update(update_data)
             response_obj["data"] = company_profile_schema.dump(company_profile)
@@ -144,7 +157,11 @@ class CompanyTypeListApi(Resource):
     @requires_auth
     def get(self) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
             response_obj["data"] = sorted(
@@ -165,7 +182,11 @@ class CompanyTypeApi(Resource):
     @requires_auth
     def get(self, company_type_name) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
             response_obj["data"] = CompanyType[company_type_name].value
@@ -183,7 +204,11 @@ class EmployeeCountRangeListApi(Resource):
     @requires_auth
     def get(self) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
             response_obj["data"] = [
@@ -203,10 +228,17 @@ class EmployeeCountRangeApi(Resource):
     @requires_auth
     def get(self, employee_count_range_name) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
-            response_obj["data"] = EmployeeCountRange[employee_count_range_name].value  # noqa: E501
+            response_obj["data"] = EmployeeCountRange[
+                employee_count_range_name
+            ].value
+
             response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
@@ -221,7 +253,11 @@ class YearlyRevenueRangeListApi(Resource):
     @requires_auth
     def get(self) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
             response_obj["data"] = [
@@ -241,10 +277,17 @@ class YearlyRevenueRangeApi(Resource):
     @requires_auth
     def get(self, yearly_revenue_range_name) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
-            response_obj["data"] = YearlyRevenueRange[yearly_revenue_range_name].value  # noqa: E501
+            response_obj["data"] = YearlyRevenueRange[
+                yearly_revenue_range_name
+            ].value
+
             response_obj["success"] = True
             response = jsonify(response_obj)
             response.status_code = 200
@@ -259,12 +302,20 @@ class CountriesListApi(Resource):
     @requires_auth
     def get(self) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
             response_obj["data"] = sorted(
                 [
-                    {"code": d.alpha_3, "country_code": d.alpha_2, "name": d.name}  # noqa: E501
+                    {
+                        "code": d.alpha_3,
+                        "country_code": d.alpha_2,
+                        "name": d.name
+                    }
                     for d in pycountry.countries
                 ],
                 key=itemgetter("name"),
@@ -283,13 +334,21 @@ class ProvincesListApi(Resource):
     @requires_auth
     def get(self) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
+
         args = request.args
 
         try:
             response_obj["data"] = sorted(
                 [
-                    {"code": d.code, "name": d.name}
+                    {
+                        "code": d.code,
+                        "name": d.name
+                    }
                     for d in pycountry.subdivisions.get(
                         country_code=args["country_code"]
                     )
@@ -310,7 +369,11 @@ class IndustryListApi(Resource):
     @requires_auth
     def get(self) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
             accounts = Industry.get_all()
@@ -329,7 +392,11 @@ class IndustryApi(Resource):
     @requires_auth
     def get(self, industry_id):
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
             industry = Industry.get_by_id(industry_id)

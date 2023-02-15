@@ -3,8 +3,13 @@ from marshmallow_enum import EnumField
 
 from app.db import ma
 
-from .models import (AccountType, CompanyType, EmployeeCountRange, Role,
-                     YearlyRevenueRange)
+from .models import (
+    AccountType,
+    CompanyType,
+    EmployeeCountRange,
+    Role,
+    YearlyRevenueRange
+)
 
 
 class AccountSchema(ma.Schema):
@@ -14,11 +19,18 @@ class AccountSchema(ma.Schema):
     email = fields.Str()
     given_names = fields.Str()
     id = fields.Int(dump_only=True)
+    is_tax_id_verified = fields.Boolean()
     job_title = fields.Str()
     phone = fields.Str()
-    roles = fields.List(EnumField(Role, load_by=EnumField.NAME, dump_by=EnumField.NAME))
+    roles = fields.List(EnumField(
+        Role,
+        load_by=EnumField.NAME,
+        dump_by=EnumField.NAME
+    ))
+    state_tax_id = fields.Str()
     sub = fields.Str()
     surnames = fields.Str()
+    tax_id_state = fields.Str()
 
 
 account_schema = AccountSchema()
@@ -35,20 +47,15 @@ class CompanyProfileSchema(ma.Schema):
     country = fields.Str()
     description = fields.Str()
     employee_count_range = EnumField(EmployeeCountRange)
-    federal_tax_id = fields.Str()
     founded = fields.Integer()
     id = fields.Int(dump_only=True)
     industry = fields.Int()
-    is_active = fields.Boolean()
-    is_tax_id_verified = fields.Boolean()
     key_products = fields.List(fields.Str())
     key_services = fields.List(fields.Str())
     name = fields.Str()
     parent_company = fields.Str()
     postal_code = fields.Str()
-    state_tax_id = fields.Str()
     state_province = fields.Str()
-    tax_id_state = fields.Str()
     website = fields.Str()
     yearly_revenue_range = EnumField(YearlyRevenueRange)
 

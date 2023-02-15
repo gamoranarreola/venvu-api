@@ -1,19 +1,16 @@
 """empty message
 
-Revision ID: f26bd7f72891
-Revises:
-Create Date: 2022-10-03 10:49:56.388407
+Revision ID: 0e37e4fb81a7
+Revises: 
+Create Date: 2023-02-14 20:04:02.287472
 
 """
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
-import json
-
-from app.db.models import Industry
 
 # revision identifiers, used by Alembic.
-revision = 'f26bd7f72891'
+revision = '0e37e4fb81a7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -34,22 +31,17 @@ def upgrade():
     sa.Column('founded', sa.Integer(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('industry', sa.Integer(), nullable=True),
-    sa.Column('is_active', sa.Boolean(), nullable=True),
-    sa.Column('is_tax_id_verified', sa.Boolean(), nullable=True),
     sa.Column('key_products', postgresql.ARRAY(sa.String(length=32)), nullable=True),
     sa.Column('key_services', postgresql.ARRAY(sa.String(length=32)), nullable=True),
     sa.Column('name', sa.String(length=64), nullable=True),
     sa.Column('parent_company', sa.String(length=64), nullable=True),
     sa.Column('postal_code', sa.String(length=8), nullable=True),
     sa.Column('state_province', sa.String(length=32), nullable=True),
-    sa.Column('state_tax_id', sa.String(length=16), nullable=True),
-    sa.Column('tax_id_state', sa.String(length=2), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('website', sa.String(length=64), nullable=True),
     sa.Column('yearly_revenue_range', sa.Enum('_U500K', '_500K_TO_999K', '_1M_TO_U2P5M', '_2P5M_TO_U5M', '_5M_TO_U10M', '_10M_TO_U100M', '_100M_TO_U500M', '_500M_TO_U1B', '_1BPLUS', name='yearlyrevenuerange'), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name'),
-    sa.UniqueConstraint('state_tax_id', 'tax_id_state', name='unique_state_tax_id'),
     sa.UniqueConstraint('website')
     )
     op.create_table('industry',
@@ -68,21 +60,22 @@ def upgrade():
     sa.Column('email', sa.String(length=64), nullable=True),
     sa.Column('given_names', sa.String(length=32), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('is_tax_id_verified', sa.Boolean(), nullable=True),
     sa.Column('job_title', sa.String(length=32), nullable=True),
     sa.Column('phone', sa.String(length=13), nullable=True),
-    sa.Column('sub', sa.String(length=64), nullable=True),
     sa.Column('roles', postgresql.ARRAY(sa.Enum('_VND_ADM', '_VND_REP', '_VND_PUB', '_CNS_ADM', '_CNS_REP', '_CNS_PUB', name='role')), nullable=True),
+    sa.Column('state_tax_id', sa.String(length=16), nullable=True),
+    sa.Column('sub', sa.String(length=64), nullable=True),
     sa.Column('surnames', sa.String(length=32), nullable=True),
+    sa.Column('tax_id_state', sa.String(length=2), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['company_profile_id'], ['company_profile.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('state_tax_id', 'tax_id_state', name='unique_state_tax_id'),
     sa.UniqueConstraint('sub')
     )
     # ### end Alembic commands ###
-
-    industries_json = json.loads(open("src/utils/seed_data/industries.json").read())
-    op.bulk_insert(Industry.__table__, industries_json)
 
 
 def downgrade():

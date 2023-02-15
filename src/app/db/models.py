@@ -100,10 +100,6 @@ class CompanyProfile(db.Model):
 
     __tablename__ = "company_profile"
 
-    __table_args__ = (
-        db.UniqueConstraint("state_tax_id", "tax_id_state", name="unique_state_tax_id"),
-    )
-
     accounts = db.relationship("Account", back_populates="company_profile")
     address_line_1 = db.Column(db.String(64))
     address_line_2 = db.Column(db.String(32))
@@ -113,29 +109,29 @@ class CompanyProfile(db.Model):
     country = db.Column(db.String(32))
     created_at = db.Column(db.DateTime, server_default=func.now())
     description = db.Column(db.String(2048))
-    employee_count_range = db.Column(db.Enum(EmployeeCountRange), nullable=True)
+    employee_count_range = db.Column(
+        db.Enum(EmployeeCountRange),
+        nullable=True
+    )
     founded = db.Column(db.Integer)
     id = db.Column(db.Integer, primary_key=True)
     industry = db.Column(db.Integer)
-    is_active = db.Column(db.Boolean, default=False)
-    is_tax_id_verified = db.Column(db.Boolean, default=False)
     key_products = db.Column(postgresql.ARRAY(db.String(32)))
     key_services = db.Column(postgresql.ARRAY(db.String(32)))
     name = db.Column(db.String(64), unique=True)
     parent_company = db.Column(db.String(64))
     postal_code = db.Column(db.String(8))
     state_province = db.Column(db.String(32))
-    state_tax_id = db.Column(db.String(16))
-    tax_id_state = db.Column(db.String(2))
     updated_at = db.Column(db.DateTime, onupdate=func.now())
     website = db.Column(db.String(64), unique=True)
-    yearly_revenue_range = db.Column(db.Enum(YearlyRevenueRange), nullable=True)
+    yearly_revenue_range = db.Column(
+        db.Enum(YearlyRevenueRange),
+        nullable=True
+    )
 
     def __init__(
         self,
         name,
-        state_tax_id,
-        tax_id_state,
         address_line_1="",
         address_line_2="",
         address_line_3="",
@@ -146,8 +142,6 @@ class CompanyProfile(db.Model):
         employee_count_range=None,
         founded=None,
         industry=None,
-        is_active=False,
-        is_tax_id_verified=False,
         key_products=[],
         key_services=[],
         parent_company="",
@@ -167,10 +161,6 @@ class CompanyProfile(db.Model):
         self.employee_count_range = employee_count_range
         self.founded = founded
         self.industry = industry
-        self.state_tax_id = state_tax_id
-        self.tax_id_state = tax_id_state
-        self.is_active = is_active
-        self.is_tax_id_verified = is_tax_id_verified
         self.key_products = key_products
         self.key_services = key_services
         self.name = name
@@ -214,8 +204,20 @@ class Account(db.Model):
     """
 
     __tablename__ = "account"
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "state_tax_id",
+            "tax_id_state",
+            name="unique_state_tax_id"
+        ),
+    )
+
     account_type = db.Column(db.Enum(AccountType))
-    company_profile = db.relationship("CompanyProfile", back_populates="accounts")
+    company_profile = db.relationship(
+        "CompanyProfile",
+        back_populates="accounts"
+    )
     company_profile_id = db.Column(
         db.Integer,
         db.ForeignKey("company_profile.id", ondelete="CASCADE"),
@@ -226,11 +228,14 @@ class Account(db.Model):
     email = db.Column(db.String(64), unique=True)
     given_names = db.Column(db.String(32))
     id = db.Column(db.Integer, primary_key=True)
+    is_tax_id_verified = db.Column(db.Boolean, default=False)
     job_title = db.Column(db.String(32))
     phone = db.Column(db.String(13))
-    sub = db.Column(db.String(64), unique=True)
     roles = db.Column(postgresql.ARRAY(db.Enum(Role)))
+    state_tax_id = db.Column(db.String(16))
+    sub = db.Column(db.String(64), unique=True)
     surnames = db.Column(db.String(32))
+    tax_id_state = db.Column(db.String(2))
     updated_at = db.Column(db.DateTime, onupdate=func.now())
 
     def __init__(
@@ -241,10 +246,13 @@ class Account(db.Model):
         company_profile_id=None,
         department=None,
         given_names=None,
+        is_tax_id_verified=False,
         job_title=None,
         phone=None,
-        surnames=None,
         roles=[],
+        state_tax_id=None,
+        surnames=None,
+        tax_id_state=None,
     ):
         self.account_type = account_type
         self.company_profile = company_profile_id
@@ -252,11 +260,14 @@ class Account(db.Model):
         self.department = department
         self.email = email
         self.given_names = given_names
+        self.is_tax_id_verified = is_tax_id_verified
         self.job_title = job_title
         self.phone = phone
+        self.roles = roles
+        self.state_tax_id = state_tax_id
         self.sub = sub
         self.surnames = surnames
-        self.roles = roles
+        self.tax_id_state = tax_id_state
         self.updated_at = datetime.utcnow()
 
     def save(self):
