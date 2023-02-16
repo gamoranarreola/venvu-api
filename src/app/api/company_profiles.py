@@ -30,19 +30,14 @@ class CompanyProfileListApi(Resource):
 
         try:
 
-            """
-            Query for an account with the
-            provided email address.
-            """
             req_data = request.get_json()
 
+            # Query for an account with the provided email address.
             account = Account.query.filter_by(
                 email=req_data.get("email")
             ).first()
 
-            """
-            Account not found.
-            """
+            # Account not found.
             if account is None:
 
                 response_obj[
@@ -52,17 +47,12 @@ class CompanyProfileListApi(Resource):
 
             else:
 
-                """
-                Query for a company profile with the provided name.
-                """
+                # Query for a company profile with the provided name.
                 company_profile = CompanyProfile.query.filter_by(
                     name=req_data.get("company_profile")["name"]
                 ).first()
 
-                """
-                If no such company profile
-                is found, create it.
-                """
+                # If no such company profile is found, create it.
                 if company_profile is None:
 
                     company_profile = CompanyProfile(

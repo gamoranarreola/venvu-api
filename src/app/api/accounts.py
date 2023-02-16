@@ -14,14 +14,17 @@ from app.tasks import delete_user_from_auth0
 class AccountListApi(Resource):
 
     """
-    This endpoint will always be called after a user logs on to the VMS through
-    Auth0.
+    This endpoint will always be called after
+    a user logs on to the VMS through Auth0.
     """
-
     @requires_auth
     def post(self) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
             req_data = request.get_json()
@@ -72,7 +75,11 @@ class AccountApi(Resource):
     @requires_auth
     def put(self, account_id) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
             req_data = request.get_json()

@@ -3,7 +3,6 @@ from operator import itemgetter
 from flask import jsonify, request
 from flask.wrappers import Response
 from flask_restful import Resource
-from pytest import Item
 
 from app.api.auth0 import Auth0, requires_auth
 from app.api.errors import BadRequestError, InternalServerError
@@ -13,7 +12,11 @@ class RolesListApi(Resource):
     @requires_auth
     def get(self) -> Response:
 
-        response_obj = {"data": None, "error": None, "success": False}
+        response_obj = {
+            "data": None,
+            "error": None,
+            "success": False
+        }
 
         try:
             response_obj["data"] = sorted(

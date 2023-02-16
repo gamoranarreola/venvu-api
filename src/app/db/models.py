@@ -97,7 +97,6 @@ class CompanyProfile(db.Model):
     """
     Represents a company or organization.
     """
-
     __tablename__ = "company_profile"
 
     accounts = db.relationship("Account", back_populates="company_profile")
@@ -202,7 +201,6 @@ class Account(db.Model):
     be as set in the corresponding Auth0 account which is
     uniquely identified with the "sub" field.
     """
-
     __tablename__ = "account"
 
     __table_args__ = (
