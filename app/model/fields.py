@@ -1,6 +1,6 @@
 account = {
     "title": "Account",
-    "description": "A Venvu account",
+    "description": "A Dict representation of a Venvu account",
     "example": ""
 }
 
@@ -32,4 +32,10 @@ error_message_500 = {
     "title": "Error message",
     "description": "",
     "example": "500 Internal Server Error",
+}
+
+error_message_duplicate_admin = {
+    "title": "Error message",
+    "description": "",
+    "example": "Duplicate admin error"
 }

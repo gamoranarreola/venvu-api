@@ -11,11 +11,9 @@ class SignInResponse:
     def __init__(
         self,
         *,
-        status: str | None,
         account: Dict,
     ) -> None:
-        self.status = status,
-        self.account = account,
+        self.account = account
 
     def encode(self):
         return {

@@ -6,7 +6,8 @@ from flask import Response
 from app.model import (
     BadRequestResponse,
     OKResponse,
-    InternalServerErrorResponse
+    InternalServerErrorResponse,
+    DuplicateAdminErrorResponse,
 )
 from app.data.logger import logger
 
@@ -30,6 +31,12 @@ def error_400_response(
 
 def error_500_response(exc: Exception) -> Response:
     response = InternalServerErrorResponse(message=str(exc))
+    logger.exception(exc)
+    return response, 500
+
+
+def error_duplicate_admin_response(exc: Exception) -> Response:
+    response = DuplicateAdminErrorResponse(message=str(exc))
     logger.exception(exc)
     return response, 500
 

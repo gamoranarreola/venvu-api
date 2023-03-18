@@ -32,4 +32,3 @@ class AccountRepository:
     def save(self, account: Account) -> Account:
         self.db_session.add(account)
         self.db_session.commit()
-        return account

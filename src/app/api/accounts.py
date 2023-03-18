@@ -8,7 +8,7 @@ from app.api.errors import (BadRequestError, DuplicateAdminSignupError,
                             InternalServerError)
 from app.db.models import Account, Role
 from app.db.schemas import account_schema
-from app.tasks import delete_user_from_auth0
+from app.tasks.tasks import delete_user_from_auth0
 
 
 class AccountListApi(Resource):

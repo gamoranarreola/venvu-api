@@ -11,6 +11,8 @@ from app.utils.encoder import ModelEncoder
 
 app = Flask(__name__)
 app.config["RESTX_JSON"] = {"cls": ModelEncoder}
+app.config["CELERY_BROKER_URL"] = "redis://127.0.0.1:6379/0"
+app.config["RESULT_BACKEND"] = "redis://127.0.0.1:6379/0"
 CORS(app)
 
 cache.init_app(app)
