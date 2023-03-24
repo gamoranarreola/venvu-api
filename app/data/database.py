@@ -1,4 +1,3 @@
-import os
 import enum
 
 from sqlalchemy import (
@@ -14,16 +13,16 @@ from sqlalchemy import (
     text,
 )
 from sqlalchemy.dialects import postgresql
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
+import sqlalchemy.orm
 
-engine = create_engine(os.environ.get("DATABASE_URL"))
+engine = create_engine("postgresql://venvu_db_test:venvu_db_test@localhost:5432/venvu_db_test")
 
 db_session = scoped_session(
     sessionmaker(autocommit=False, autoflush=False, bind=engine)
 )
 
-Base = declarative_base()
+Base = sqlalchemy.orm.declarative_base()
 Base.query = db_session.query_property()
 
 

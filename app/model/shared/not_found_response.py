@@ -20,12 +20,12 @@ class NotFoundResponse:
             "NotFoundResponse",
             {
                 "status": fields.String(
-                    **request_status_error,
+                    metadata=request_status_error,
                     required=True,
                 ),
                 "message": fields.String(
-                    **error_message_404,
-                    require=True,
+                    metadata=error_message_404,
+                    required=True,
                 )
             }
         )

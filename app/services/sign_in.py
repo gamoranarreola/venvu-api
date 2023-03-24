@@ -2,6 +2,7 @@ from flask import Response
 import json
 
 from app.model.sign_in import SignInResponse
+from app.model.shared import DuplicateAdminErrorResponse
 from app.data.database import Account, db_session
 from app.data.schemas import account_schema
 from app.repositories import AccountRepository
@@ -15,6 +16,7 @@ from app.services.common import (
     "Sign Up API"
 )
 def sign_in(email: str, sub: str) -> Response:
+
     # First check if there is an account under the provided email address.
     account = AccountRepository(db_session).find_by_email(email)
 
@@ -32,8 +34,12 @@ def sign_in(email: str, sub: str) -> Response:
             )
 
             AccountRepository(db_session).save(account)
+
         else:
-            pass
+            return DuplicateAdminErrorResponse(
+                f"An admin already exists for {email}"
+            ), 409
+
             # _ = delete_user_from_auth0.apply_async(args=[email])
 
     return SignInResponse(

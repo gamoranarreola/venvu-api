@@ -8,6 +8,7 @@ from app.model.fields import request_status, account
 
 
 class SignInResponse:
+
     def __init__(
         self,
         *,
@@ -27,13 +28,13 @@ class SignInResponse:
             "SignInResponse",
             {
                 "status": fields.String(
-                    **request_status,
+                    metadata=request_status,
                     required=True,
                 )
             },
             {
                 "account": fields.Dict(
-                    **account,
+                    metadata=account,
                     required=True,
                 )
             }

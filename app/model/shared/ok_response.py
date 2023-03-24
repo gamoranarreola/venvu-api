@@ -16,7 +16,7 @@ class OKResponse:
             "OKResponse",
             {
                 "status": fields.String(
-                    **request_status,
+                    metadata=request_status,
                     required=True
                 )
             }

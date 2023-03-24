@@ -1,4 +1,3 @@
-"""
 import http.client
 import json
 import os
@@ -127,7 +126,6 @@ class Auth0:
         )
 
         user = json.loads(conn.getresponse().read())
-        print("\n\nauth0_create_user: " + str(user))
 
         if is_admin:
             Auth0.last_vms_admin_user_id = user.get("user_id")
@@ -216,4 +214,3 @@ class Auth0:
             "content-type": "application/json",
             "cache-control": "no-cache",
         }
-"""
