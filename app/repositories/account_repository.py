@@ -9,6 +9,9 @@ class AccountRepository:
     def __init__(self, db_session: orm.Session) -> None:
         self.db_session = db_session
 
+    def find_by_id(self, id: int) -> Account | None:
+        return (self.db_session.query(Account).get(id))
+
     def find_by_email(self, email: str) -> Account | None:
 
         return (

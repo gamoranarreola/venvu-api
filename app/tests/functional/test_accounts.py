@@ -2,6 +2,7 @@ from colorama import Fore
 
 from app.auth0 import Auth0
 from app.tests.conftest import log_test_end, log_test_start
+from app.data.database import AccountType, Role
 
 
 """
@@ -75,8 +76,6 @@ def test_create_new_account_has_no_admin(
 
     with create_app.test_client() as client:
 
-        print(Fore.BLUE + "In test function")
-
         response = client.post(
             "/api/v1/sign-in",
             json={
@@ -96,12 +95,14 @@ In this case, an admin user exists and is completing signup
 (account type and admin info)
 """
 
-"""
-def test_update_account(app, add_admin_no_company_profile, get_vms_api_auth_token):  # noqa: E501
-    with app.test_client() as client:
+
+def test_update_account(create_app, create_admin_no_company_profile, get_vms_api_auth_token):  # noqa: E501
+    log_test_start()
+
+    with create_app.test_client() as client:
 
         response = client.put(
-            "/api/accounts/1",
+            "/api/v1/accounts/1",
             json={
                 "account_type": AccountType._CNS.name,
                 "given_names": "Guillermo Alberto",
@@ -113,6 +114,6 @@ def test_update_account(app, add_admin_no_company_profile, get_vms_api_auth_toke
             headers={"authorization": get_vms_api_auth_token()},
         )
 
-        print("\n\nTEST OUTPUT:\n {}".format(response.json))
+        print(Fore.BLUE + "\n\nTEST OUTPUT:\n {}".format(response.json))
         assert response.status_code == 200
-"""
+        log_test_end()

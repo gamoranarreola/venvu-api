@@ -1,4 +1,5 @@
 import enum
+import os
 
 from sqlalchemy import (
     create_engine,
@@ -16,7 +17,7 @@ from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 import sqlalchemy.orm
 
-engine = create_engine("postgresql://venvu_db_test:venvu_db_test@localhost:5432/venvu_db_test")
+engine = create_engine(os.environ.get("DATABASE_URL", None))
 
 db_session = scoped_session(
     sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -103,10 +104,12 @@ class CompanyProfile(Base):
     country = Column(String(32))
     created_at = Column(DateTime, server_default=text("now()"))
     description = Column(String(2048))
+
     employee_count_range = Column(
         Enum(EmployeeCountRange),
         nullable=True
     )
+
     founded = Column(Integer)
     id = Column(Integer, primary_key=True)
     industry = Column(Integer)
@@ -118,6 +121,7 @@ class CompanyProfile(Base):
     state_province = Column(String(32))
     updated_at = Column(DateTime, server_default=text("now()"))
     website = Column(String(64), unique=True)
+
     yearly_revenue_range = Column(
         Enum(YearlyRevenueRange),
         nullable=True
@@ -141,15 +145,18 @@ class Account(Base):
     )
 
     account_type = Column(Enum(AccountType))
+
     company_profile = relationship(
         "CompanyProfile",
         back_populates="accounts"
     )
+
     company_profile_id = Column(
         Integer,
         ForeignKey("company_profile.id", ondelete="CASCADE"),
         nullable=True,
     )
+
     created_at = Column(DateTime, server_default=text("now()"))
     department = Column(String(32))
     email = Column(String(64), unique=True)

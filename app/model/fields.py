@@ -37,5 +37,17 @@ error_message_500 = {
 error_message_duplicate_admin = {
     "title": "Error message",
     "description": "",
-    "example": "Duplicate admin error"
+    "example": "Duplicate admin error",
+}
+
+email = {
+    "title": "Email address",
+    "description": "",
+    "example": "user@venvu.com,"
+}
+
+sub = {
+    "title": "Auth0 sub field",
+    "description": "",
+    "example": "auth0|63a512e800a175ca36f078db",
 }

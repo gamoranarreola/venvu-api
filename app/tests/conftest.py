@@ -113,6 +113,27 @@ def create_admin(create_account, create_company_profile):
 
 
 @pytest.fixture
+def create_admin_no_company_profile(create_account):
+    email = "vms_admin@venvu.com"
+    auth0_admin_user = Auth0.auth0_create_user(email, "s8dKU7Sp9o", True)
+
+    Auth0.auth0_assign_user_roles(
+        auth0_admin_user.get("user_id"), "rol_mOHJ7dARVN420281"
+    )
+
+    account = create_account(
+        {
+            "email": email,
+            "sub": auth0_admin_user.get("user_id"),
+            "roles": [Role["_VND_ADM"]],
+        }
+    )
+
+    db_session.add(account)
+    db_session.commit()
+
+
+@pytest.fixture
 def get_vms_api_auth_token():
     def _get_vms_api_auth_token():
         conn = http.client.HTTPSConnection(os.environ.get("AUTH0_DOMAIN"))

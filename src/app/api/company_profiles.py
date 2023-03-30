@@ -13,7 +13,7 @@ from app.db.models import (Account, CompanyProfile, CompanyType,
                            YearlyRevenueRange)
 from app.db.schemas import (account_schema, company_profile_schema,
                             industries_schema, industry_schema)
-from app.tasks.tasks import assign_user_roles
+from app.tasks import assign_user_roles
 
 
 class CompanyProfileListApi(Resource):

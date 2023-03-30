@@ -1,8 +1,8 @@
 from app.model.sign_in.sign_in_response import SignInResponse
-from app.model.shared.ok_response import OKResponse
+from app.model.sign_in.sign_in_request import SignInRequest
 
 
 __all__ = [
     SignInResponse,
-    OKResponse
+    SignInRequest,
 ]
