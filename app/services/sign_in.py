@@ -5,7 +5,10 @@ from app.model.sign_in import SignInResponse, SignInRequest
 from app.data.database import Account, db_session
 from app.data.schemas import account_schema
 from app.repositories import AccountRepository
-from app.services.common import error_409_response, error_400_response
+from app.services.common import (
+    error_409_response,
+    error_400_response,
+)
 # from app.tasks import delete_user_from_auth0
 
 

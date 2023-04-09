@@ -3,27 +3,32 @@ from typing import Dict
 
 from flask_restx import Model, Namespace
 from marshmallow import fields
-from app.model.fields import request_status, account
+
+from app.model.fields import (
+    request_status,
+    company_profile,
+)
 
 
-class EditAccountResponse:
+class CreateCompanyProfileResponse:
 
     def __init__(
         self,
         *,
-        account: Dict,
+        company_profile: Dict
     ) -> None:
-        self.account = account
+        self.company_profile = company_profile
 
     def encode(self):
         return {
             "status": "ok",
-            "account": self.account
+            "company_profile": self.company_profile
         }
 
+    @staticmethod
     def model(ns: Namespace) -> Model:
         return ns.model(
-            "EditAccountResponse",
+            "CreateCompanyProfileResponse",
             {
                 "status": fields.String(
                     metadata=request_status,
@@ -31,8 +36,8 @@ class EditAccountResponse:
                 )
             },
             {
-                "account": fields.Dict(
-                    metadata=account,
+                "company_profile": fields.Dict(
+                    metadata=company_profile,
                     required=True,
                 )
             }

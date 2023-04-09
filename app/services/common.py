@@ -1,13 +1,15 @@
 import functools
-import re
 
-from flask import Response, request
+from flask import Response
 
+from app.repositories.account_repository import AccountRepository
+from app.data.database import db_session
 from app.model import (
     BadRequestResponse,
     OKResponse,
     InternalServerErrorResponse,
     DuplicateAdminErrorResponse,
+    NotFoundResponse,
 )
 from app.data.logger import logger
 
@@ -31,6 +33,12 @@ def error_400_response(
     return response, 400
 
 
+def error_404_response(message: str = "Not Found") -> Response:
+    response = NotFoundResponse(message)
+    logger.debug(response)
+    return response, 404
+
+
 def error_409_response(
     message: str = "Duplicate Admin",
     exc: Exception = None
@@ -52,6 +60,11 @@ def error_500_response(exc: Exception) -> Response:
     return response, 500
 
 
+def account_not_found(account_id: int) -> Response:
+    message = f"Account not found: {account_id}"
+    return error_404_response(message)
+
+
 def api_edit_account(api_name: str):
     def wrapper(func):
 
@@ -61,12 +74,12 @@ def api_edit_account(api_name: str):
             logger.info(api_name)
 
             try:
-                try:
-                    pass
-                except ValueError:
-                    pass
+                account = AccountRepository(db_session).find_by_id(account_id)
 
-                res = func(account_id)
+                if account is None:
+                    return account_not_found(account_id)
+
+                res = func(account)
                 return res
             except Exception as exc:
                 return error_500_response(exc)

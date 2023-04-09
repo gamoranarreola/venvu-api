@@ -51,3 +51,15 @@ sub = {
     "description": "",
     "example": "auth0|63a512e800a175ca36f078db",
 }
+
+roles = {
+    "title": "Auth0 user roles",
+    "description": "",
+    "example": "['_VND_ADM', '_VND_REP']"
+}
+
+company_profile = {
+    "title": "Venvu Company Profile",
+    "description": "A Dict representation of a Venvu company profile",
+    "example": ""
+}

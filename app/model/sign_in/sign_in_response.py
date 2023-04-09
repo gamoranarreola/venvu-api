@@ -4,7 +4,10 @@ from typing import Dict
 from flask_restx import Model, Namespace
 from marshmallow import fields
 
-from app.model.fields import request_status, account
+from app.model.fields import (
+    request_status,
+    account,
+)
 
 
 class SignInResponse:

@@ -49,11 +49,11 @@ class SignInRequest:
             "SignInRequest",
             {
                 "email": fields.String(
-                    **email,
+                    metadata=email,
                     required=True
                 ),
                 "sub": fields.String(
-                    **sub,
+                    metadata=sub,
                     required=True
                 )
             }

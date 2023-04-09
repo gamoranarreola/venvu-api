@@ -1,7 +1,10 @@
 from flask_restx import Model, Namespace
 from marshmallow import fields
 
-from app.model.fields import error_message_400, request_status_error
+from app.model.fields import (
+    error_message_400,
+    request_status_error,
+)
 
 
 class BadRequestResponse:

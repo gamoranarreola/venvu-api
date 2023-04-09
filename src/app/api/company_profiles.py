@@ -6,13 +6,26 @@ from flask.wrappers import Response
 from flask_restful import Resource
 
 from app.api.auth0 import requires_auth
-from app.api.errors import (Auth0RequestError, BadRequestError,
-                            InternalServerError)
-from app.db.models import (Account, CompanyProfile, CompanyType,
-                           EmployeeCountRange, Industry, Role,
-                           YearlyRevenueRange)
-from app.db.schemas import (account_schema, company_profile_schema,
-                            industries_schema, industry_schema)
+from app.api.errors import (
+    Auth0RequestError,
+    BadRequestError,
+    InternalServerError
+)
+from app.db.models import (
+    Account,
+    CompanyProfile,
+    CompanyType,
+    EmployeeCountRange,
+    Industry,
+    Role,
+    YearlyRevenueRange
+)
+from app.db.schemas import (
+    account_schema,
+    company_profile_schema,
+    industries_schema,
+    industry_schema
+)
 from app.tasks import assign_user_roles
 
 
