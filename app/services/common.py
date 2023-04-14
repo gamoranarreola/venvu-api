@@ -3,6 +3,7 @@ import functools
 from flask import Response
 
 from app.repositories.account_repository import AccountRepository
+from app.repositories.company_profile_repository import CompanyProfileRepository  # noqa: E501
 from app.data.database import db_session
 from app.model import (
     BadRequestResponse,
@@ -65,6 +66,11 @@ def account_not_found(account_id: int) -> Response:
     return error_404_response(message)
 
 
+def company_profile_not_found(company_profile_id: int) -> Response:
+    message = f"Company Profile not found: {company_profile_id}"
+    return error_404_response(message)
+
+
 def api_edit_account(api_name: str):
     def wrapper(func):
 
@@ -80,6 +86,29 @@ def api_edit_account(api_name: str):
                     return account_not_found(account_id)
 
                 res = func(account)
+                return res
+            except Exception as exc:
+                return error_500_response(exc)
+
+        return wrapped
+    return wrapper
+
+
+def api_edit_company_profile(api_name: str):
+    def wrapper(func):
+
+        @functools.wraps(func)
+        def wrapped(company_profile_id: int):
+
+            logger.info(api_name)
+
+            try:
+                company_profile = CompanyProfileRepository(db_session).find_by_id(company_profile_id)  # noqa: E501
+
+                if company_profile is None:
+                    return company_profile_not_found(company_profile_id)
+
+                res = func(company_profile)
                 return res
             except Exception as exc:
                 return error_500_response(exc)

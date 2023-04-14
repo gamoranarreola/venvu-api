@@ -1,9 +1,8 @@
 import json
 from flask import Response, request
 
-from app.data.database import Account
+from app.data.database import Account, db_session
 from app.repositories.account_repository import AccountRepository
-from app.data.database import db_session
 from app.services.common import api_edit_account
 from app.model.accounts import EditAccountResponse, EditAccountRequest
 from app.services.common import error_400_response

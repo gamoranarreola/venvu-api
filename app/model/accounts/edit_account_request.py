@@ -26,6 +26,7 @@ class EditAccountRequest:
         field = "account"
         value = self.account
         V.required(field, value)
+        V.account(self, value)
 
     def validate(self):
         self.__validate_account()

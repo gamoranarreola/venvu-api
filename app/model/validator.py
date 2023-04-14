@@ -2,7 +2,7 @@ from typing import Any
 import re
 
 from app.data.database import Role
-from app.data.schemas import company_profile_schema
+from app.data.schemas import company_profile_schema, account_schema
 
 
 def required(field: str, value: Any):
@@ -44,8 +44,17 @@ def list_of_role_names(field: str, value: Any):
             raise ValueError(message)
 
 
+def account(field: str, value: Any):
+    message = f"{field} should be a Venvu account"
+    validation_result = account_schema.validate(value)
+
+    if len(validation_result) > 0:
+        raise ValueError(f"{message} {validation_result}")
+
+
 def company_profile(field: str, value: Any):
     message = f"{field} should be a Venvu company profile"
+    validation_result = company_profile_schema.validate(value)
 
-    if len(company_profile_schema.validate(value)) > 0:
-        raise ValueError(message)
+    if len(validation_result) > 0:
+        raise ValueError(f"{message}: {validation_result}")
