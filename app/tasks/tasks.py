@@ -1,14 +1,7 @@
-"""
-from celery import Celery
+from app.api.auth0 import Auth0
 
-from app.auth0.auth0 import Auth0
-from app.main import app
+from . import celery
 
-celery = Celery(
-    __name__,
-    app.config["CELERY_BROKER_URL"],
-    app.config["RESULT_BACKEND"]
-)
 
 @celery.task(name="app.tasks.delete_user_from_auth0")
 def delete_user_from_auth0(email):
@@ -19,4 +12,3 @@ def delete_user_from_auth0(email):
 @celery.task(name="app.tasks.assign_user_roles")
 def assign_user_roles(user_id, roles):
     Auth0.auth0_assign_user_roles(user_id=user_id, roles=roles)
-"""
