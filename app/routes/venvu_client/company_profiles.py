@@ -22,6 +22,7 @@ from app.model import (
     CreateCompanyProfileResponse,
     EditCompanyProfileRequest,
     EditCompanyProfileResponse,
+    CodeAndNameListResponse,
 )
 
 
@@ -47,6 +48,9 @@ class CompanyProfiles(Resource):
 
 @NSP.route("/company-profiles/employee-count-ranges")
 class EmployeeCountRanges(Resource):
+    @NSP.response(200, "OK", CodeAndNameListResponse.model(NSP))
+    @NSP.response(400, "Bad Request", BadRequestResponse.model(NSP))
+    @NSP.response(500, "Internal Server Error", InternalServerErrorResponse.model(NSP))  # noqa: E501
     def get(self):
         return get_employee_count_ranges()
 

@@ -6,6 +6,7 @@ from app.model.company_profiles.create_company_profile_request import CreateComp
 from app.model.company_profiles.create_company_profile_response import CreateCompanyProfileResponse  # noqa: E501
 from app.model.company_profiles.edit_company_profile_request import EditCompanyProfileRequest  # noqa: E501
 from app.model.company_profiles.edit_company_profile_response import EditCompanyProfileResponse  # noqa: E501
+from app.model.shared.code_and_name_list_response import CodeAndNameListResponse
 from app.model.shared.ok_response import OKResponse
 from app.model.shared.bad_request_response import BadRequestResponse
 from app.model.shared.not_found_response import NotFoundResponse
@@ -21,6 +22,7 @@ __all__ = [
     CreateCompanyProfileResponse,
     EditCompanyProfileRequest,
     EditCompanyProfileResponse,
+    CodeAndNameListResponse,
     OKResponse,
     BadRequestResponse,
     NotFoundResponse,

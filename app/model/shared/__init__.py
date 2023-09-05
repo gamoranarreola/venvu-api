@@ -3,6 +3,7 @@ from app.model.shared.bad_request_response import BadRequestResponse
 from app.model.shared.not_found_response import NotFoundResponse
 from app.model.shared.internal_server_error_response import InternalServerErrorResponse  # noqa: E501
 from app.model.shared.duplicate_admin_error_response import DuplicateAdminErrorResponse  # noqa: E501
+from app.model.shared.code_and_name_list_response import CodeAndNameListResponse
 
 __all__ = [
     OKResponse,
@@ -11,4 +12,5 @@ __all__ = [
     InternalServerErrorResponse,
     InternalServerErrorResponse,
     DuplicateAdminErrorResponse,
+    CodeAndNameListResponse,
 ]
